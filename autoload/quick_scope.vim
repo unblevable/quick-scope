@@ -9,25 +9,48 @@ endfunction
 
 " Highlight
 " execute 'highlight link QuickScopeF Function'
-" call s:set_color('QuickScopeF', '', 'underline')
+call s:set_color('QuickScopeF', '', 'underline')
 call s:set_color('QuickScopeF', 'fg', 155)
-call s:set_color('QuickScopeF', 'bg', 'white')
+call s:set_color('QuickScopeF', 'bg', 235)
 
 function! s:highlight_custom(line, pos, len)
     let debug = ''
     let first_occurrences = ''
+    let is_word = 1
     let unique = {}
     let i = a:pos
     while i < a:len
-        " First time char has occured
-        if has_key(unique, a:line[i])
+        " Ignore whitespace
+        " if a:line[i] =~# '\v\s'
+        if a:line[i] =~# '\v[`\-=[\]\\;'',./~!@#$%^&*()_+{}|:"<>?]|\s'
+            " Do nothing.
+
+        " Char has already occurred.
+        elseif has_key(unique, a:line[i])
+            let unique[a:line[i]] += 1
+
+        " First time char has occurred.
+        else
             let debug = debug . a:line[i]
-            let unique[a:line[i]] = ''
-            let first_occurrences = printf("%s|%%%sc", first_occurrences, i + 1)
+            let unique[a:line[i]] = 1
+
+            " If not start of new word, don't highlight.
+            if is_word != 0
+                let first_occurrences = printf("%s|%%%sc", first_occurrences, i + 1)
+                let is_word = 0
+            endif
         endif
+
+        " A special character or whitespace denotes a new word.
+        if a:line[i] =~# '\v[`\-=[\]\\;'',./~!@#$%^&*()_+{}|:"<>?]|\s'
+            let is_word = 1
+        endif
+
 
         let i += 1
     endwhile
+
+    echom debug
 
     if !empty(first_occurrences)
         call matchadd('QuickScopeF', '\v%' . line('.') . 'l(' . first_occurrences[1:] . ')', s:priority + 2)
@@ -36,23 +59,15 @@ endfunction
 
 " Main functions
 function! s:highlight_line()
-    call s:unhighlight_line()
-
-    let s:line = getline(line('.'))
-
-    let s:len = strlen(s:line)
-
-    " Get cursor position, zero-indexed
+    let line = getline(line('.'))
+    let len = strlen(line)
     let pos = col('.')
 
-    " Guards
-    if empty(s:line)
+    if empty(line)
         let pos = 0
     endif
 
-    call s:highlight_custom(s:line, pos, s:len)
-
-    " :h search-range
+    call s:highlight_custom(line, pos, len)
 endfunction
 
 function! s:unhighlight_line()
@@ -64,6 +79,6 @@ endfunction
 " Autoload
 augroup quick_scope
     autocmd!
-    autocmd CursorMoved,InsertLeave,ColorScheme * call s:highlight_line()
+    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
     autocmd InsertEnter * call s:unhighlight_line()
 augroup END
