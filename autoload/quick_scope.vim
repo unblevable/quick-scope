@@ -1,5 +1,5 @@
 " Priority for overruling other highlight matches.
-let s:priority = 1000
+let s:priority = 100
 
 " Highlight group marking first appearance of characters in a line.
 let s:hi_group_primary = 'QuickScopePrimary'
@@ -13,14 +13,6 @@ function! s:set_color(group, attr, color)
     execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
 endfunction
 
-function! s:increment(n)
-    return a:n + 1
-endfunction
-
-function! s:decrement(n)
-    return a:n - 1
-endfunction
-
 " Main functions
 function! s:highlight_from_to(line, start, end)
     " Patterns to match the characters that will be marked with primary and
@@ -31,7 +23,7 @@ function! s:highlight_from_to(line, start, end)
     " Used as a hash for uniqueness.
     let uniqueness = {}
 
-    let special_chars = {'`': '', '-': '', '=': '', '[': '', ']': '', '\': '', ';': '', "'": '', ',': '', '.': '', '/': '', '~': '', '!': '', '@': '', '#': '', '$': '', '%': '', '^': '', '&': '', '*': '', '(': '', ')': '', '_': '', '+': '', '{': '', '}': '', '|': '', ':': '', '"': '', '<': '', '>': '', '?': '',}
+    let special_chars = {'`': '', '-': '', '=': '', '[': '', ']': '', '\': '', ';': '', "'": '', ',': '', '.': '', '/': '', '~': '', '!': '', '@': '', '#': '', '$': '', '%': '', '^': '', '&': '', '*': '', '(': '', ')': '', '_': '', '+': '', '{': '', '}': '', '|': '', ':': '', '"': '', '<': '', '>': '', '?': '', "\n": '', "\r": ''}
 
     " Indicates whether a new Vim word has been reached
     let is_new_word = 1
@@ -43,14 +35,12 @@ function! s:highlight_from_to(line, start, end)
     let char_hi_secondary = 0
 
     let i = a:start
-    let IterFunc = a:start < a:end ? function('s:increment') : function('s:decrement')
     let do_increment = a:start < a:end ? 1 : 0
     while i != a:end
         let char = a:line[i]
-
         " Whitespace or a special character has been reached.
         " This set of comparisons is optimized, so it reads awkwardly.
-        if char == ' ' || char == '	' || has_key(special_chars, char)
+        if char == "\<space>" || char == "\<tab>" || empty(char) || has_key(special_chars, char)
             let is_new_word = 1
             let is_marked_for_hi = 0
 
@@ -111,16 +101,18 @@ endfunction
 function! s:highlight_line()
     let line = getline(line('.'))
     let len = strlen(line)
+
     let pos = col('.')
 
     if !empty(line)
         " Highlight after the cursor.
         call s:highlight_from_to(line, pos, len)
 
-        let pos -= 1
+        let pos -= 2
         if pos < 0
             let pos = 0
         endif
+
         " Highlight before the cursor.
         call s:highlight_from_to(line, pos, 1)
     endif
@@ -132,13 +124,18 @@ function! s:unhighlight_line()
     endfor
 endfunction
 
-" execute 'highlight link ' . s:hi_group_primary . ' Function'
+
 call s:set_color(s:hi_group_primary, '', 'underline')
 call s:set_color(s:hi_group_primary, 'fg', 155)
-call s:set_color(s:hi_group_primary, 'bg', 235)
 call s:set_color(s:hi_group_secondary, '', 'underline')
 call s:set_color(s:hi_group_secondary, 'fg', 087)
-call s:set_color(s:hi_group_secondary, 'bg', 235)
+
+" Preserve the background color of cursorline if it exists.
+if &cursorline
+    let bg = synIDattr(hlID('CursorLine'), 'bg')
+    call s:set_color(s:hi_group_primary, 'bg', bg)
+    call s:set_color(s:hi_group_secondary, 'bg', bg)
+endif
 
 " Autoload
 augroup quick_scope
