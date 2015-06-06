@@ -1,68 +1,84 @@
 " Priority for overruling other highlight matches.
 let s:priority = 1000
+
+" Highlight group marking first appearance of characters in a line.
 let s:hi_group_primary = 'QuickScopePrimary'
+" Highlight group marking second appearance of characters in a line.
 let s:hi_group_secondary = 'QuickScopeSecondary'
 
 function! s:highlight_forward(line, pos, len)
+    " Patterns to match the characters that will be marked with primary and
+    " secondary highlight groups, respectively.
     let hi_primary = ''
     let hi_secondary = ''
-    let uniqueness = {}
-    let special_chars = {'`': '', '-': '', '=': '', '[': '', ']': '', '\': '', ';': '', "'": '', ',': '', '.': '', '/': '', '~': '', '!': '', '@': '', '#': '', '$': '', '%': '', '^': '', '&': '', '*': '', '(': '', ')': '', '_': '', '+': '', '{': '', '}': '', '|': '', ':': '', '"': '', '<': '', '>': '', '?': '',}
-    let is_new_word = 1
 
-    let is_word_hi = 0
-    let letter = ''
+    " Used as a hash for uniqueness.
+    let uniqueness = {}
+
+    let special_chars = {'`': '', '-': '', '=': '', '[': '', ']': '', '\': '', ';': '', "'": '', ',': '', '.': '', '/': '', '~': '', '!': '', '@': '', '#': '', '$': '', '%': '', '^': '', '&': '', '*': '', '(': '', ')': '', '_': '', '+': '', '{': '', '}': '', '|': '', ':': '', '"': '', '<': '', '>': '', '?': '',}
+
+    " Indicates whether a new Vim word has been reached
+    let is_new_word = 1
+    " Indicates whether the current word has been marked for any highlight
+    let is_marked_for_hi = 0
+    " The position of the character in the current word that has been marked for
+    " a secondary highlight. A value of 0 indicates there is no highlight.
+    " A word cannot have both a primary and secondary highlight.
+    let char_hi_secondary = 0
 
     let i = a:pos
     while i < a:len
         let char = a:line[i]
 
-        " Start a new word when a special character or whitespace is met, but
-        " don't process it for highlighting.
-        if char == ' ' || char == '	' || has_key(special_chars, char) || i == a:len - 1
+        " Whitespace or a special character has been reached.
+        " This set of comparisons is optimized, so it reads awkwardly.
+        if char == ' ' || char == '	' || has_key(special_chars, char)
             let is_new_word = 1
-            " echom i . ':' a:len
+            let is_marked_for_hi = 0
 
-            " If the previous word has not been highlighted yet, prepare it for
-            " a secondary highlight
-            if !empty(letter) && is_word_hi == 0
-                let hi_secondary = printf("%s|%%%sc", hi_secondary, i)
-
-                let is_word_hi = 1
-                let letter = ''
+            " A secondary highlight still exists, i.e. the last word was not
+            " highlighted. Prepare the last word for a secondary highlight.
+            if char_hi_secondary > 0
+                let hi_secondary = printf("%s|%%%sc", hi_secondary, char_hi_secondary)
+                let char_hi_secondary = 0
             endif
 
-        " Character has already appeared on the line.
-        elseif has_key(uniqueness, char)
-            if get(uniqueness, char) == 1 && empty(letter)
-                let letter = char
-                " echom letter
+
+        " The first time a character has appeared
+        elseif !has_key(uniqueness, char)
+            let uniqueness[char] = 1
+
+            " If it is the start of a new word, prepare a primary highlight.
+            if is_new_word == 1
+                let is_new_word = 0
+                let is_marked_for_hi = 1
+
+                let hi_primary = printf("%s|%%%sc", hi_primary, i + 1)
+
+                " The word has a primary highlight, so a secondary highlight is
+                " no longer needed.
+                let char_hi_secondary = 0
+            endif
+
+        " The character has already appeared.
+        else
+            " If the character has already appeared exactly once and the
+            " current word not been marked yet, mark the current word for a
+            " (secondary) highlight.
+            if get(uniqueness, char) == 1 && is_marked_for_hi == 0
+                let is_marked_for_hi = 1
+                let char_hi_secondary = i + 1
             endif
 
             let uniqueness[char] += 1
-
-        " First time character has appeared.
-        else
-            " let debug = debug . a:line[i]
-            let uniqueness[char] = 1
-
-            " If start of a new word, prepare the highlight.
-            if is_new_word == 1
-                let hi_primary = printf("%s|%%%sc", hi_primary, i + 1)
-                let is_new_word = 0
-                let is_word_hi = 1
-            endif
         endif
 
         let i += 1
     endwhile
 
-    " echom debug
-    " echom hi_secondary
-
     if !empty(hi_primary)
-        " Highlight columns corresponding to matched characters (Ignore the leading
-        " | in the primary highlights string.)
+        " Highlight columns corresponding to matched characters
+        " Ignore the leading | in the primary highlights string.
         call matchadd(s:hi_group_primary, '\v%' . line('.') . 'l(' . hi_primary[1:] . ')', s:priority)
     endif
     if !empty(hi_secondary)
