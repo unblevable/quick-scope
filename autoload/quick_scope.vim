@@ -6,7 +6,23 @@ let s:hi_group_primary = 'QuickScopePrimary'
 " Highlight group marking second appearance of characters in a line.
 let s:hi_group_secondary = 'QuickScopeSecondary'
 
-function! s:highlight_forward(line, pos, len)
+" Helper functions
+function! s:set_color(group, attr, color)
+    let term = has('gui_running') ? 'gui' : 'cterm'
+
+    execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
+endfunction
+
+function! s:increment(n)
+    return a:n + 1
+endfunction
+
+function! s:decrement(n)
+    return a:n - 1
+endfunction
+
+" Main functions
+function! s:highlight_from_to(line, start, end)
     " Patterns to match the characters that will be marked with primary and
     " secondary highlight groups, respectively.
     let hi_primary = ''
@@ -26,8 +42,10 @@ function! s:highlight_forward(line, pos, len)
     " A word cannot have both a primary and secondary highlight.
     let char_hi_secondary = 0
 
-    let i = a:pos
-    while i < a:len
+    let i = a:start
+    let IterFunc = a:start < a:end ? function('s:increment') : function('s:decrement')
+    let do_increment = a:start < a:end ? 1 : 0
+    while i != a:end
         let char = a:line[i]
 
         " Whitespace or a special character has been reached.
@@ -73,7 +91,11 @@ function! s:highlight_forward(line, pos, len)
             let uniqueness[char] += 1
         endif
 
-        let i += 1
+        if do_increment == 1
+            let i += 1
+        else
+            let i -= 1
+        endif
     endwhile
 
     if !empty(hi_primary)
@@ -92,7 +114,15 @@ function! s:highlight_line()
     let pos = col('.')
 
     if !empty(line)
-            call s:highlight_forward(line, pos, len)
+        " Highlight after the cursor.
+        call s:highlight_from_to(line, pos, len)
+
+        let pos -= 1
+        if pos < 0
+            let pos = 0
+        endif
+        " Highlight before the cursor.
+        call s:highlight_from_to(line, pos, 1)
     endif
 endfunction
 
@@ -100,13 +130,6 @@ function! s:unhighlight_line()
     for m in filter(getmatches(), printf('v:val.group ==# "%s" || v:val.group ==# "%s"', s:hi_group_primary, s:hi_group_secondary))
         call matchdelete(m.id)
     endfor
-endfunction
-
-" Helper functions
-function! s:set_color(group, attr, color)
-    let term = has('gui_running') ? 'gui' : 'cterm'
-
-    execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
 endfunction
 
 " execute 'highlight link ' . s:hi_group_primary . ' Function'
