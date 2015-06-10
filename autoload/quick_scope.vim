@@ -27,8 +27,13 @@ function! s:highlight_from_to(line, start, end)
     " occurrences of each character on a line.
     let accepted_chars = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0, 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0, '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0,}
 
+
     " Indicates whether a Vim word has been highlighted
     let is_word_hi = 0
+
+    " Indicates whether this is the first word under the cursor. We don't want
+    " to highlight it.
+    let is_first_word = 1
 
     " The position of a character in a word that could possibly be given a
     " secondary highlight. A value of 0 indicates there is no character to
@@ -50,17 +55,19 @@ function! s:highlight_from_to(line, start, end)
         if char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
             " The last word has not been highlighted yet. Add a secondary
             " highlight if it exists.
-            if !is_word_hi && to_hi_secondary > 0
+            if !is_word_hi && to_hi_secondary > 0 && !is_first_word
                 let hi_secondary = printf("%s|%%%sc", hi_secondary, to_hi_secondary)
                 let to_hi_secondary = 0
             endif
 
             " A new word has been reached. Reset the highlight flag.
             let is_word_hi = 0
+
+            let is_first_word = 0
         else
             let accepted_chars[char] += 1
 
-            if !is_word_hi
+            if !is_word_hi && !is_first_word
                 let occurrences = get(accepted_chars, char)
 
                 if occurrences == 1
