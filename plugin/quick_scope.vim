@@ -1,5 +1,5 @@
-" Disable loading plugin if...
-if exists('g:loaded_quick_scope') || &compatible || v:version < 700
+" Disable loading the plugin if...
+if exists('g:loaded_quick_scope') || &cp || &compatible || v:version < 700
     finish
 endif
 
