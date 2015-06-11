@@ -5,8 +5,6 @@ let s:priority = 1
 
 " Highlight group marking first appearance of characters in a line.
 let s:hi_group_primary = 'QuickScopePrimary'
-
-" Highlight group marking second appearance of characters in a line.
 let s:hi_group_secondary = 'QuickScopeSecondary'
 
 " Helper functions
@@ -18,16 +16,17 @@ endfunction
 
 " Main functions
 
-" TODO: Generalize this function.
-function! s:add_to_highlight_patterns(patt_p, patt_s, pos_p, pos_s)
-    let [patt_p, patt_s] = [a:patt_p, a:patt_s]
+" Arguments are expected to be lists of two items.
+function! s:add_to_highlight_patterns(patterns, highlights)
+    let [patt_p, patt_s] = a:patterns
+    let [hi_p, hi_s] = a:highlights
 
     " If there is a primary highlight for the last word, add it to
     " the primary highlight pattern.
-    if a:pos_p > 0
-        let patt_p = printf("%s|%%%sc", patt_p, a:pos_p)
-    elseif a:pos_s > 0
-        let patt_s = printf("%s|%%%sc", patt_s, a:pos_s)
+    if hi_p > 0
+        let patt_p = printf("%s|%%%sc", patt_p, hi_p)
+    elseif hi_s > 0
+        let patt_s = printf("%s|%%%sc", patt_s, hi_s)
     endif
 
     return [patt_p, patt_s]
@@ -36,8 +35,7 @@ endfunction
 function! s:highlight_from_to(line, start, end)
     " Patterns to match the characters that will be marked with primary and
     " secondary highlight groups, respectively
-    let patt_primary = ''
-    let patt_secondary = ''
+    let [patt_p, patt_s] = ['', '']
 
     " Keys correspond to characters that can be highlighted. Values refer to
     " occurrences of each character on a line.
@@ -47,10 +45,9 @@ function! s:highlight_from_to(line, start, end)
     " to highlight any characters in it.
     let is_first_word = 1
 
-    " The position of a character in a word that will be given a primary
-    " highlight. A value of 0 indicates there is no character to highlight.
-    let to_hi_primary = 0
-    let to_hi_secondary = 0
+    " The position of a character in a word that will be given a highlight. A
+    " value of 0 indicates there is no character to highlight.
+    let [hi_p, hi_s] = [0, 0]
 
     " If 1, we're looping forwards from the cursor to the end of the line;
     " otherwise, we're looping from the cursor to the beginning of the line.
@@ -66,12 +63,11 @@ function! s:highlight_from_to(line, start, end)
         " Check for a <space> as a first condition for optimization.
         if char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
             if !is_first_word
-                let [patt_primary, patt_secondary] = s:add_to_highlight_patterns(patt_primary, patt_secondary, to_hi_primary, to_hi_secondary)
+                let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
             endif
 
             " We've reached a new word, so reset any highlights.
-            let to_hi_primary = 0
-            let to_hi_secondary = 0
+            let [hi_p, hi_s] = [0, 0]
 
             let is_first_word = 0
         else
@@ -86,10 +82,10 @@ function! s:highlight_from_to(line, start, end)
                 "
                 " If this is the first occurence of the letter in the word,
                 " mark it for a highlight.
-                if occurrences == 1 && ((direction == 1 && to_hi_primary == 0) || direction == 0)
-                    let to_hi_primary = i + 1
-                elseif occurrences == 2 && ((direction == 1 && to_hi_secondary == 0) || direction == 0)
-                    let to_hi_secondary = i + 1
+                if occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
+                    let hi_p = i + 1
+                elseif occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
+                    let hi_s = i + 1
                 endif
             endif
         endif
@@ -102,16 +98,16 @@ function! s:highlight_from_to(line, start, end)
     endwhile
 
     " Prepare any remaining highlights.
-    let [patt_primary, patt_secondary] = s:add_to_highlight_patterns(patt_primary, patt_secondary, to_hi_primary, to_hi_secondary)
+    let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
-    if !empty(patt_primary)
-        " Highlight columns corresponding to matched characters
+    if !empty(patt_p)
+        " Highlight columns corresponding to matched characters.
         "
         " Ignore the leading | in the primary highlights string.
-        call matchadd(s:hi_group_primary, '\v%' . line('.') . 'l(' . patt_primary[1:] . ')', s:priority)
+        call matchadd(s:hi_group_primary, '\v%' . line('.') . 'l(' . patt_p[1:] . ')', s:priority)
     endif
-    if !empty(patt_secondary)
-        call matchadd(s:hi_group_secondary, '\v%' . line('.') . 'l(' . patt_secondary[1:] . ')', s:priority)
+    if !empty(patt_s)
+        call matchadd(s:hi_group_secondary, '\v%' . line('.') . 'l(' . patt_s[1:] . ')', s:priority)
     endif
 endfunction
 
@@ -119,7 +115,6 @@ function! s:highlight_line()
     if !g:qs_disable
         let line = getline(line('.'))
         let len = strlen(line)
-
         let pos = col('.')
 
         if !empty(line)
@@ -127,9 +122,7 @@ function! s:highlight_line()
             call s:highlight_from_to(line, pos, len)
 
             let pos -= 2
-            if pos < 0
-                let pos = 0
-            endif
+            if pos < 0 | let pos = 0 | endif
 
             " Highlight before the cursor.
             call s:highlight_from_to(line, pos, -1)
