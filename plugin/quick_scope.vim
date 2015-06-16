@@ -43,6 +43,17 @@ endfunction
 
 command! -nargs=0 QuickScopeToggle call s:toggle()
 
+" Plug mappings ----------------------------------------------------------------
+nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
+vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
+
+" Autoload ---------------------------------------------------------------------
+augroup quick_scope
+    autocmd!
+    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
+    autocmd InsertEnter * call s:unhighlight_line()
+augroup END
+
 " Colors -----------------------------------------------------------------------
 " Priority for overruling other highlight matches.
 let s:priority = 1
@@ -93,13 +104,6 @@ if &cursorline
     call s:set_hi_group(s:hi_group_primary, 'bg', bg)
     call s:set_hi_group(s:hi_group_secondary, 'bg', bg)
 endif
-
-" Autoload ---------------------------------------------------------------------
-augroup quick_scope
-    autocmd!
-    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
-    autocmd InsertEnter * call s:unhighlight_line()
-augroup END
 
 " Primary functions ------------------------------------------------------------
 " Arguments are expected to be lists of two items.
