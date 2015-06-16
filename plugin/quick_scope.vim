@@ -22,6 +22,8 @@ if v:version < 700
     echoerr s:plugin_name . " requires Vim running in version 7 or later."
 endif
 
+unlet! s:plugin_name
+
 " Save cpoptions and reassign them later. See :h use-cpo-save.
 let s:cpo_save = &cpo
 set cpo&vim
@@ -200,8 +202,10 @@ function! s:get_highlight_patterns(line, start, end)
         endif
     endwhile
 
-    " Prepare any remaining highlights.
-    let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
+    " We don't want to highlight a word at the beginning of a line.
+    if (direction == 1)
+        let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
+    endif
 
     return [patt_p, patt_s]
 endfunction
