@@ -62,7 +62,7 @@ let s:priority = 1
 let s:hi_group_primary = 'QuickScopePrimary'
 let s:hi_group_secondary = 'QuickScopeSecondary'
 
-function! s:set_hi_group(group, attr, color)
+function! s:add_to_highlight_group(group, attr, color)
     let term = has('gui_running') ? 'gui' : 'cterm'
     execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
 endfunction
@@ -93,20 +93,33 @@ if !exists('g:qs_second_occurrence_highlight_color')
     let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
 endif
 
-call s:set_hi_group(s:hi_group_primary, '', 'underline')
-call s:set_hi_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
-call s:set_hi_group(s:hi_group_secondary, '', 'underline')
-call s:set_hi_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
+call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
+call s:add_to_highlight_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
+call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
+call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
 
 " Preserve the background color of cursorline if it exists.
 if &cursorline
     let bg = synIDattr(hlID('CursorLine'), 'bg')
-    call s:set_hi_group(s:hi_group_primary, 'bg', bg)
-    call s:set_hi_group(s:hi_group_secondary, 'bg', bg)
+    call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg)
+    call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg)
 endif
 
 " Primary functions ------------------------------------------------------------
 " Arguments are expected to be lists of two items.
+function! s:apply_highlight_patterns(patterns)
+    let [patt_p, patt_s] = a:patterns
+    if !empty(patt_p)
+        " Highlight columns corresponding to matched characters.
+        "
+        " Ignore the leading | in the primary highlights string.
+        call matchadd(s:hi_group_primary, '\v%' . line('.') . 'l(' . patt_p[1:] . ')', s:priority)
+    endif
+    if !empty(patt_s)
+        call matchadd(s:hi_group_secondary, '\v%' . line('.') . 'l(' . patt_s[1:] . ')', s:priority)
+    endif
+endfunction
+
 function! s:add_to_highlight_patterns(patterns, highlights)
     let [patt_p, patt_s] = a:patterns
     let [hi_p, hi_s] = a:highlights
@@ -122,7 +135,7 @@ function! s:add_to_highlight_patterns(patterns, highlights)
     return [patt_p, patt_s]
 endfunction
 
-function! s:highlight_from_to(line, start, end)
+function! s:get_highlight_patterns(line, start, end)
     " Patterns to match the characters that will be marked with primary and
     " secondary highlight groups, respectively
     let [patt_p, patt_s] = ['', '']
@@ -190,15 +203,7 @@ function! s:highlight_from_to(line, start, end)
     " Prepare any remaining highlights.
     let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
-    if !empty(patt_p)
-        " Highlight columns corresponding to matched characters.
-        "
-        " Ignore the leading | in the primary highlights string.
-        call matchadd(s:hi_group_primary, '\v%' . line('.') . 'l(' . patt_p[1:] . ')', s:priority)
-    endif
-    if !empty(patt_s)
-        call matchadd(s:hi_group_secondary, '\v%' . line('.') . 'l(' . patt_s[1:] . ')', s:priority)
-    endif
+    return [patt_p, patt_s]
 endfunction
 
 function! s:highlight_line()
@@ -208,14 +213,16 @@ function! s:highlight_line()
         let pos = col('.')
 
         if !empty(line)
-            " Highlight after the cursor.
-            call s:highlight_from_to(line, pos, len)
+            " Highlights after the cursor.
+            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len)
+            call s:apply_highlight_patterns([patt_p, patt_s])
 
             let pos -= 2
             if pos < 0 | let pos = 0 | endif
 
-            " Highlight before the cursor.
-            call s:highlight_from_to(line, pos, -1)
+            " Highlights before the cursor.
+            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, -1)
+            call s:apply_highlight_patterns([patt_p, patt_s])
         endif
     endif
 endfunction
