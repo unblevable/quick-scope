@@ -1,20 +1,6 @@
-let g:qs_disable = 0
-
-" Priority for overruling other highlight matches.
-let s:priority = 1
-
-" Highlight group marking first appearance of characters in a line.
-let s:hi_group_primary = 'QuickScopePrimary'
-let s:hi_group_secondary = 'QuickScopeSecondary'
-
-" Helper functions
-function! s:set_color(group, attr, color)
-    let term = has('gui_running') ? 'gui' : 'cterm'
-
-    execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
-endfunction
-
-" Main functions
+if !exists('g:qs_enable')
+    let g:qs_enable = 1
+endif
 
 " Arguments are expected to be lists of two items.
 function! s:add_to_highlight_patterns(patterns, highlights)
@@ -112,7 +98,7 @@ function! s:highlight_from_to(line, start, end)
 endfunction
 
 function! s:highlight_line()
-    if !g:qs_disable
+    if g:qs_enable
         let line = getline(line('.'))
         let len = strlen(line)
         let pos = col('.')
@@ -136,16 +122,55 @@ function! s:unhighlight_line()
     endfor
 endfunction
 
-call s:set_color(s:hi_group_primary, '', 'underline')
-call s:set_color(s:hi_group_primary, 'fg', 155)
-call s:set_color(s:hi_group_secondary, '', 'underline')
-call s:set_color(s:hi_group_secondary, 'fg', 087)
+" Colors
+" Priority for overruling other highlight matches.
+let s:priority = 1
+
+" Highlight group marking first appearance of characters in a line.
+let s:hi_group_primary = 'QuickScopePrimary'
+let s:hi_group_secondary = 'QuickScopeSecondary'
+
+function! s:set_hi_group(group, attr, color)
+    let term = has('gui_running') ? 'gui' : 'cterm'
+    execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
+endfunction
+
+function! s:set_default_color(group, co_gui, co_256, co_16)
+    if hlexists(a:group)
+        let color = synIDattr(hlID(a:group), 'fg')
+    else
+        if has('gui_running')
+            let color = a:co_gui
+        elseif &t_Co > 255
+            let color = a:co_256
+        else
+            let color = a:co_16
+        endif
+    endif
+
+    return color
+endfunction
+
+if !exists('g:qs_first_occurrence_highlight_color')
+    " set color to match 'Function' highlight group or bright green
+    let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
+endif
+
+if !exists('g:qs_second_occurrence_highlight_color')
+    " set color to match 'Keyword' highlight group or cyan
+    let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
+endif
+
+call s:set_hi_group(s:hi_group_primary, '', 'underline')
+call s:set_hi_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
+call s:set_hi_group(s:hi_group_secondary, '', 'underline')
+call s:set_hi_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
 
 " Preserve the background color of cursorline if it exists.
 if &cursorline
     let bg = synIDattr(hlID('CursorLine'), 'bg')
-    call s:set_color(s:hi_group_primary, 'bg', bg)
-    call s:set_color(s:hi_group_secondary, 'bg', bg)
+    call s:set_hi_group(s:hi_group_primary, 'bg', bg)
+    call s:set_hi_group(s:hi_group_secondary, 'bg', bg)
 endif
 
 " Autoload
@@ -154,3 +179,13 @@ augroup quick_scope
     autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
     autocmd InsertEnter * call s:unhighlight_line()
 augroup END
+
+function! quick_scope#toggle()
+    if g:qs_enable
+        let g:qs_enable = 0
+        call s:unhighlight_line()
+    else
+        let g:qs_enable = 1
+        call s:highlight_line()
+    endif
+endfunction
