@@ -1,5 +1,7 @@
 # quick-scope
-A Vim plugin that highlights which characters to target for the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd>T</kbd> motions. **No mappings are needed**.
+A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F</kbd> and family. **No mappings are needed**.
+
+*Check out [character motions](#character-motions) to learn about what these keys do and their advantages. See [other motions](#other-motions) for alternative ways of moving across a line and their use-cases.*
 
 + [Overview](#overview)
   + [Features](#features)
@@ -14,8 +16,6 @@ A Vim plugin that highlights which characters to target for the <kbd>f</kbd>, <k
 
 ## Overview
 When moving across a line, the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd>T</kbd> motions combined with <kbd>;</kbd> and <kbd>,</kbd> should be your go-to options for [many reasons](#advantages). Quick-scope fixes their only drawback: it is difficult to consistently choose the right characters to target.
-
-*Check out [character motions](#character-motions) to learn about what these keys do and their advantages. See [other motions](#other-motions) for alternative ways of moving across a line and their use-cases.*
 
 ### Features
 + Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, everytime your cursor moves.
@@ -154,7 +154,7 @@ Is any of this getting through to you?
 + Note that many of Vim's motions can take a preceding `count`, e.g. <kbd>2w</kbd> moves your cursor two words to the right. However, in most cases I would advise you **not** to use a `count`:
   + The number keys tend to be awkward to reach.
   + It is silly to waste time counting things before using a motion.
-  + There are probably more effective ways to get to where you want in one or two keystrokes anyway (usually with <kbd>f</kbd> and family or simply repeating the motion).
+  + There are probably more effective ways to get to where you want in one or two keystrokes anyway (usually with <kbd>f</kbd> and co. or simply by repeating the motion).
   
 + <kbd>b</kbd>, <kbd>B</kbd>, <kbd>w</kbd>, <kbd>W</kbd>, <kbd>ge</kbd>, <kbd>gE</kbd>, <kbd>e</kbd>, <kbd>E</kbd>
   
