@@ -20,6 +20,7 @@ endif
 " @todo: Actually test which versions of Vim this plugin supports.
 if v:version < 700
     echoerr s:plugin_name . " requires Vim running in version 7 or later."
+    finish
 endif
 
 unlet! s:plugin_name
@@ -54,6 +55,7 @@ augroup quick_scope
     autocmd!
     autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
     autocmd InsertEnter * call s:unhighlight_line()
+    autocmd ColorScheme * call s:set_highlight_colors()
 augroup END
 
 " Colors -----------------------------------------------------------------------
@@ -85,27 +87,31 @@ function! s:set_default_color(group, co_gui, co_256, co_16)
     return color
 endfunction
 
-if !exists('g:qs_first_occurrence_highlight_color')
-    " set color to match 'Function' highlight group or bright green
-    let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
-endif
+function! s:set_highlight_colors()
+  if !exists('g:qs_first_occurrence_highlight_color')
+      " set color to match 'Function' highlight group or bright green
+      let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
+  endif
 
-if !exists('g:qs_second_occurrence_highlight_color')
-    " set color to match 'Keyword' highlight group or cyan
-    let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
-endif
+  if !exists('g:qs_second_occurrence_highlight_color')
+      " set color to match 'Keyword' highlight group or cyan
+      let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
+  endif
 
-call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
-call s:add_to_highlight_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
-call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
-call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
+  call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
+  call s:add_to_highlight_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
+  call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
+  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
 
-" Preserve the background color of cursorline if it exists.
-if &cursorline
-    let bg = synIDattr(hlID('CursorLine'), 'bg')
-    call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg)
-    call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg)
-endif
+  " Preserve the background color of cursorline if it exists.
+  if &cursorline
+      let bg = synIDattr(hlID('CursorLine'), 'bg')
+      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg)
+      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg)
+  endif
+endfunction
+
+call s:set_highlight_colors()
 
 " Primary functions ------------------------------------------------------------
 " Arguments are expected to be lists of two items.
@@ -202,10 +208,7 @@ function! s:get_highlight_patterns(line, start, end)
         endif
     endwhile
 
-    " We don't want to highlight a word at the beginning of a line.
-    if (direction == 1)
-        let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
-    endif
+    let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
     return [patt_p, patt_s]
 endfunction
