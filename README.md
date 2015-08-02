@@ -3,6 +3,8 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
 
 *Check out [character motions](#character-motions) to learn about what these keys do and their advantages. See [other motions](#other-motions) for alternative ways of moving across a line and their use-cases.*
 
+**TLDR**: This plugin should help you get to any word on a line in two or three keystrokes with built-in Vim commands.
+
 + [Overview](#overview)
   + [Features](#features)
   + [Benefits](#benefits)
