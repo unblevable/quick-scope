@@ -67,17 +67,13 @@ function! s:add_to_highlight_group(group, attr, color)
 endfunction
 
 function! s:set_default_color(group, co_gui, co_256, co_16)
-    if hlexists(a:group)
-        let color = synIDattr(hlID(a:group), 'fg')
-    else
-        if has('gui_running')
-            let color = a:co_gui
-        elseif !has('gui_running') && &t_Co > 255
-            let color = a:co_256
-        else
-            let color = a:co_16
-        endif
-    endif
+      if has('gui_running')
+          let color = a:co_gui
+      elseif &t_Co > 255
+          let color = a:co_256
+      else
+          let color = a:co_16
+      endif
 
     return color
 endfunction
@@ -100,7 +96,16 @@ function! s:set_highlight_colors()
 
   " Preserve the background color of cursorline if it exists.
   if &cursorline
-      let bg = synIDattr(hlID('CursorLine'), 'bg')
+      if has('gui_running')
+          let term = 'gui'
+      elseif &t_Co > 255
+          let term = 'cterm'
+      else
+          let term = 'term'
+      endif
+
+      let bg = synIDattr(hlID('CursorLine'), 'bg', term)
+
       call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg)
       call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg)
   endif
