@@ -1,6 +1,8 @@
 # quick-scope
 A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F</kbd> and family. **No mappings are needed**.
 
+![screencast3](https://cloud.githubusercontent.com/assets/723755/8230149/6ecbed28-158b-11e5-9474-89e846e7682c.gif)
+
 *Check out [character motions](#character-motions) to learn about what these keys do and their advantages. See [other motions](#other-motions) for alternative ways of moving across a line and their use-cases.*
 
 **TLDR**: This plugin should help you get to any word on a line in two or three keystrokes with built-in Vim commands.
