@@ -7,11 +7,6 @@ endif
 
 let g:loaded_quick_scope = 1
 
-if &cp
-    echoerr s:plugin_name . " cannot be initialized because of errors."
-    finish
-endif
-
 if &compatible
     echoerr s:plugin_name . " won't load in Vi-compatible mode."
     finish
