@@ -1,0 +1,165 @@
+*quick_scope.txt*
+
+Version:    1.0.0
+Homepage:   https://github.com/unblevable/quick-scope
+Author:     Brian Le (unblevable)
+License:    MIT
+
+ 0. CONTENTS                                                     *qs-contents*
+==============================================================================
+
+  1. quick-scope .............................. |qs-quick-scope|
+  2. Usage .................................... |qs-usage|
+    2.1 Example ............................... |qs-example|
+  3. Features ................................. |qs-features|
+  4. Options .................................. |qs-options|
+    4.1 Customize colors ...................... |qs-customize-colors|
+    4.2 Toggle highlighting ................... |qs-toggle-highlighting|
+  5. Motivation ............................... |qs-motivation|
+  6. Bugs ..................................... |qs-bugs|
+    6.1 Known bugs ............................ |qs-known-bugs|
+  7. Changelog ................................ |qs-changelog|
+
+ 1. QUICK-SCOPE                                               *qs-quick-scope*
+==============================================================================
+
+This plugin highlights the optimal characters to target for the |f|, |F|, |t|
+and |T| motions for easier and faster left-right movement in Vim.
+
+If you don't routinely use these keys you should! See `:help` |f| and `:help`
+|;| to get started and |qs-motivation| for a detailed look at why these keys
+are so useful.
+
+In practice, this plugin should help you get to any word on a line in two or
+three keystrokes with built-in Vim commands.
+
+ 2. USAGE                                                           *qs-usage*
+==============================================================================
+
+If you're viewing this file in Vim and have quick-scope installed, you should
+already have good idea of what it does.
+
+Otherwise, see https://github.com/unblevable/quick-scope#Features for
+screencaps of this plugin in action.
+
+ 2.1 EXAMPLE                                                      *qs-example*
+------------------------------------------------------------------------------
+
+Place your cursor at the beginning the line below:
+>
+  It's just like the story of the grasshopper and the octopus.
+
+You should see at least one highlighted character in each 'word'.
+
+A character is highlighted with a |primary-color|/|secondary-color| if it is
+the first/second occurrence of that character from your cursor on a line.
+
+Use |f|/|F| + {char} to jump directly to any character with a primary
+highlight forward/backward.
+
+The `h` in `the` should be the only character with a secondary highlight if
+your cursor at the beginning of the example. Use |f| + h + |;| to quickly
+move to it.
+
+ 3. FEATURES                                                     *qs-features*
+==============================================================================
+
+- Quick-scope highlights the first occurrences of characters to the left and
+  right of your cursor, once per word, everytime your cursor moves.
+
+- If a word does not contain a first occurrence of a character but contains a
+  second occurrence of a character, that character is highlighted in another
+  color.
+
+- Quick-scope takes extra measures to avoid bombarding you with superfluous
+  colors:
+
+  - It ignores special characters since they are easy to eye and tend to only
+    appear once or twice on a line.
+
+  - By default, it samples colors from your active color scheme for its
+    highlighting.
+
+ 4. OPTIONS                                                       *qs-options*
+==============================================================================
+
+ 4.1 CUSTOMIZE COLORS                                    *qs-customize-colors*
+------------------------------------------------------------------------------
+
+                                       *g:qs_first_occurrence_highlight_color*
+                                                               *primary-color*
+Set the (primary) color for the first occurrence of a character.
+
+GUI Vim~
+>
+  let g:qs_first_occurrence_highlight_color = '#afff5f'
+<
+Terminal Vim~
+>
+  let g:qs_first_occurrence_highlight_color = 155
+<
+                                      *g:qs_second_occurrence_highlight_color*
+                                                             *secondary-color*
+Set the (secondary) color for the second occurrence of a character.
+
+GUI Vim~
+>
+  let g:qs_second_occurrence_highlight_color = '#5fffff'
+<
+Terminal Vim~
+>
+  let g:qs_second_occurrence_highlight_color = 81
+<
+ 4.2 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
+------------------------------------------------------------------------------
+
+                                                           *:QuickScopeToggle*
+Turn highlight on or off with a user command:
+>
+  :QuickScopeToggle
+<
+                                                    *<plug>(QuickScopeToggle)*
+Create a custom mapping (<leader> + q in the example below):
+>
+  nmap <leader>q <plug>(QuickScopeToggle)
+  vmap <leader>q <plug>(QuickScopeToggle)
+<
+Notice that you must use 'nmap'/'vmap' instead of 'nnoremap'/'vnoremap'.
+
+ 5. MOTIVATION                                                 *qs-motivation*
+==============================================================================
+
+In the link below is a detailed look at the most common and useful options for
+moving your cursor across a line in Vim:
+https://github.com/unblevable/quick-scope#moving-across-a-line
+
+When you are aware of the existing tools available to you and their tradeoffs,
+you can better understand the benefits of this plugin.
+
+ 6. BUGS                                                             *qs-bugs*
+==============================================================================
+
+Post any bug or feature request here:
+http://github.com/unblevable/quick-scope/issues
+
+ 6.1 KNOWN BUGS                                                *qs-known-bugs*
+------------------------------------------------------------------------------
+
+- Indenting with |<<| or |>>| throws off the highlights.
+
+- The primary highlighting function can be very slow and is called everytime
+  the cursor moves.
+
+  Let me know if this plugin slows down Vim to an unmanageable level. Using
+  |:QuickScopeToggle| make sure that it is acutally this plugin that is
+  causing performance problems you are experiencing.
+
+ 7. CHANGELOG                                                   *qs-changelog*
+==============================================================================
+
+Version   Date        Release Notes~
+|---------|-----------|-----------------------------------------------------------|
+1.0.0     08-02-2015  Initial upload.
+
+==============================================================================
+vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:
