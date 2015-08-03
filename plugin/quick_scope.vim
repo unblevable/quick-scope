@@ -72,7 +72,7 @@ function! s:set_default_color(group, co_gui, co_256, co_16)
     else
         if has('gui_running')
             let color = a:co_gui
-        elseif &t_Co > 255
+        elseif !has('gui_running') && &t_Co > 255
             let color = a:co_256
         else
             let color = a:co_16
