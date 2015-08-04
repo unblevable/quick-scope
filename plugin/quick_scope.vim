@@ -50,7 +50,7 @@ augroup quick_scope
     autocmd!
     autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
     autocmd InsertEnter * call s:unhighlight_line()
-    autocmd ColorScheme * call s:set_highlight_colors()
+    autocmd VimEnter,ColorScheme * call s:set_highlight_colors()
 augroup END
 
 " Colors -----------------------------------------------------------------------
@@ -61,23 +61,49 @@ let s:priority = 1
 let s:hi_group_primary = 'QuickScopePrimary'
 let s:hi_group_secondary = 'QuickScopeSecondary'
 
-function! s:add_to_highlight_group(group, attr, color)
-    let term = has('gui_running') ? 'gui' : 'cterm'
-    execute printf("highlight %s %s%s=%s", a:group, term, a:attr, a:color)
+" Detect if the running instance of Vim acts as a GUI or terminal.
+function! s:get_term()
+  if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR)
+    let term = 'gui'
+  else
+    let term ='cterm'
+  endif
+
+  return term
 endfunction
 
+" Called when no color configurations are set. Choose default colors for
+" highlighting.
 function! s:set_default_color(group, co_gui, co_256, co_16)
-      if has('gui_running')
+    let term = s:get_term()
+
+    " Pick a color from an existing highlight group if the highlight group
+    " exists.
+    if hlexists(a:group)
+      let color = synIDattr(synIDtrans(hlID(a:group)), 'fg', term)
+    endif
+
+    if color == -1
+      if term ==# 'gui'
           let color = a:co_gui
-      elseif &t_Co > 255
-          let color = a:co_256
       else
-          let color = a:co_16
+          if &t_Co > 255
+            let color = a:co_256
+          else
+            let color = a:co_16
+          endif
       endif
+    endif
 
     return color
 endfunction
 
+" Set or append to a custom highlight group
+function! s:add_to_highlight_group(group, attr, color)
+    execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
+endfunction
+
+" Set the colors used for highlighting.
 function! s:set_highlight_colors()
   if !exists('g:qs_first_occurrence_highlight_color')
       " set color to match 'Function' highlight group or bright green
@@ -96,22 +122,14 @@ function! s:set_highlight_colors()
 
   " Preserve the background color of cursorline if it exists.
   if &cursorline
-      if has('gui_running')
-          let term = 'gui'
-      elseif &t_Co > 255
-          let term = 'cterm'
-      else
-          let term = 'term'
+      let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
+
+      if bg_color != -1
+        call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
+        call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
       endif
-
-      let bg = synIDattr(hlID('CursorLine'), 'bg', term)
-
-      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg)
-      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg)
   endif
 endfunction
-
-call s:set_highlight_colors()
 
 " Primary functions ------------------------------------------------------------
 " Arguments are expected to be lists of two items.
