@@ -98,7 +98,7 @@ function! s:set_default_color(group, co_gui, co_256, co_16)
     return color
 endfunction
 
-" Set or append to a custom highlight group
+" Set or append to a custom highlight group.
 function! s:add_to_highlight_group(group, attr, color)
     execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
 endfunction
@@ -132,6 +132,8 @@ function! s:set_highlight_colors()
 endfunction
 
 " Primary functions ------------------------------------------------------------
+" Apply the highlights for each highlight group based on pattern strings.
+"
 " Arguments are expected to be lists of two items.
 function! s:apply_highlight_patterns(patterns)
     let [patt_p, patt_s] = a:patterns
@@ -146,6 +148,7 @@ function! s:apply_highlight_patterns(patterns)
     endif
 endfunction
 
+" Set or append to the pattern strings for the highlights.
 function! s:add_to_highlight_patterns(patterns, highlights)
     let [patt_p, patt_s] = a:patterns
     let [hi_p, hi_s] = a:highlights
@@ -161,6 +164,8 @@ function! s:add_to_highlight_patterns(patterns, highlights)
     return [patt_p, patt_s]
 endfunction
 
+" Finds which characters to highlight and returns their column positions as a
+" pattern string.
 function! s:get_highlight_patterns(line, start, end)
     " Patterns to match the characters that will be marked with primary and
     " secondary highlight groups, respectively
