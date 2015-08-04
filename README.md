@@ -25,20 +25,20 @@ When moving across a line, the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd
 + Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, everytime your cursor moves.
 
   ![screencast0](https://cloud.githubusercontent.com/assets/723755/8228892/5cf6798e-1580-11e5-8ed4-379d676e7dba.gif)
-  
+
 + If a word does not contain a first occurrence of a character but contains a second occurrence of a character, that character is highlighted in another color (**blue** in the screencast).
 
   ![screencast1](https://cloud.githubusercontent.com/assets/723755/8228897/6603ab28-1580-11e5-82cc-b048e3801edb.gif)
 
 + Quick-scope takes extra measures to avoid bombarding you with superfluous colors:
   + It ignores special characters since they are easy to eye and tend to only appear once or twice on a line.
-  
+
     ![screencast2](https://cloud.githubusercontent.com/assets/723755/8229126/1abf997c-1582-11e5-872c-eff92386abca.gif)
-  
+
   + By default, it samples colors from your active color scheme for its highlighting.
-  
+
     ![screencast3](https://cloud.githubusercontent.com/assets/723755/8230149/6ecbed28-158b-11e5-9474-89e846e7682c.gif)
-    
+
 ### Benefits
 + Highlighting is done automatically.
   + You already know what character to target before pressing any keys.
@@ -46,7 +46,7 @@ When moving across a line, the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd
 + This plugin neither introduces new motions nor overrides built-in ones.
   + You don't have to learn any new commands or mappings.
   + This helps you to become a better user of vanilla Vim.
-  
+
 ## Installation
 Use your favorite plugin manager.
 ```vim
@@ -86,7 +86,7 @@ Or create a custom mapping for the toggle.
 nmap <leader>q <plug>(QuickScopeToggle)
 vmap <leader>q <plug>(QuickScopeToggle)
 ```
-  
+
 ## Moving Across a Line
 This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their tradeoffs, you can better understand the benefits of this plugin.
 
@@ -117,7 +117,7 @@ F<char> moves your cursor to the first occurrence of <char> to the left.
 
 Fl
 All year long, the grasshopper kept burying acorns for winter,
-         ^ < < < < < < < < < < ^  
+         ^ < < < < < < < < < < ^
 ```
 <kbd>t</kbd> and <kbd>T</kbd> can be just as useful. Notice how <kbd>tf</kbd> is the most optimal way to reach the word `off` in the example below.
 ```
@@ -159,36 +159,35 @@ Is any of this getting through to you?
   + The number keys tend to be awkward to reach.
   + It is silly to waste time counting things before using a motion.
   + There are probably more effective ways to get to where you want in one or two keystrokes anyway (usually with <kbd>f</kbd> and co. or simply by repeating the motion).
-  
+
 + <kbd>b</kbd>, <kbd>B</kbd>, <kbd>w</kbd>, <kbd>W</kbd>, <kbd>ge</kbd>, <kbd>gE</kbd>, <kbd>e</kbd>, <kbd>E</kbd>
-  
+
   The word motions. They are usually the optimal choices for moving your cursor a distance of one or two words. (See `:h word` for Vim's definition of a word.) Take advantage of the fact that some of these keys ignore special characters or target the beginning or end of words.
-  
+
 + <kbd>0</kbd>, <kbd>^</kbd>, <kbd>$</kbd>
 
   These keys let you skip to the beginning or end of a line. They are especially useful for repositioning your cursor for another motion on long lines.
-  
-  You might want to map <kbd>0</kbd> to <kbd>^</kbd> because <kbd>^</kbd> tends to be the preferred functionality but <kbd>0</kbd> is easier to reach. While you're at it, you might want to map these keys to their <kbd>g</kbd>-prefixed versions for consistent behavior across wrapped lines.
+
+  You might want to map <kbd>0</kbd> to <kbd>^</kbd> because <kbd>^</kbd> tends to be the preferred functionality but <kbd>0</kbd> is easier to reach.
   ```vim
   " Your .vimrc
-  
+
   " Move across wrapped lines like regular lines
-  noremap 0 g^  " Go to the first non-blank character of a line
-  noremap ^ g0  " Just in case you need to go to the very beginning of a line
-  noremap $ g$
+  noremap 0 ^ " Go to the first non-blank character of a line
+  noremap ^ 0 " Just in case you need to go to the very beginning of a line
   ```
-  
+
 + <kbd>h</kbd>, <kbd>l</kbd>
 
   Try to avoid spamming these keys at all costs, but bear in mind that they *are* the most optimal ways to move your cursor one or two spaces.
-  
+
 + <kbd>?</kbd>, <kbd>/</kbd>
 
   The search keys. They are overkill for moving across a line.
   + Much of their behavior overlaps with that of the superior character motions.
   + <kbd>/</kbd> + `pattern` + <kbd>Return</kbd> amounts to a wildly inefficent number of keystrokes.
   + Searches pollute your buffer with lingering highlights.
-  
+
 + <kbd>(</kbd>, <kbd>)</kbd>
 
   These keys let you move across sentences. (See `:h sentence` for Vim's definition of a sentence.) They can also be convenient when working with programming languages that occasionally have `!` or `?` at the end of words, e.g. Ruby and Elixir.
