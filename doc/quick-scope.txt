@@ -49,7 +49,7 @@ Place your cursor at the beginning the line below:
 >
   It's just like the story of the grasshopper and the octopus.
 
-You should see at least one highlighted character in each 'word'.
+You should see at least one highlighted character in all but one 'word'.
 
 A character is highlighted with a |primary-color|/|secondary-color| if it is
 the first/second occurrence of that character from your cursor on a line.
