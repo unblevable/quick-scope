@@ -34,8 +34,6 @@ if exists('g:qs_highlight_on_key_press') && g:qs_highlight_on_key_press == 1
   noremap <unique> <expr> <silent> F <sid>find('F') . <sid>find_cleanup()
   noremap <unique> <expr> <silent> t <sid>find('t') . <sid>find_cleanup()
   noremap <unique> <expr> <silent> T <sid>find('T') . <sid>find_cleanup()
-  noremap <unique> <expr> <silent> ; <sid>semicolon()
-  noremap <unique> <expr> <silent> , <sid>comma()
 else
   augroup quick_scope
     autocmd!
@@ -45,33 +43,33 @@ else
   augroup END
 endif
 
-function! s:semicolon()
-  call s:unhighlight_line()
-  call s:highlight_line(2, s:char)
-  return ';'
-endfunction
+let s:chars_s = []
 
-function! s:comma()
-  call s:unhighlight_line()
-  call s:highlight_line(2, s:char)
-
-  return ','
-endfunction
-
-function! s:maybe_unhighlight_line()
+function! s:custom()
+  let s:ccount = s:ccount + 1
+  if s:ccount == 2
+    call s:unhighlight_line()
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_color)
+    autocmd! quick_scope CursorMoved
+  endif
 endfunction
 
 function! s:find(motion)
+  " reset
+  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_color)
+  call s:unhighlight_line()
+  autocmd! quick_scope CursorMoved
+
   if (a:motion ==# 'f' || a:motion ==# 't')
     let s:direction = 1
   else
     let s:direction = 0
   endif
 
-  call s:highlight_line(s:direction)
+  call s:highlight_line(s:direction, '')
 
   " Keep the cursor visible in the editor.
-  let cursor = matchadd(s:hi_group_cursor, '\%#', s:priority + 1)
+  let s:cursor = matchadd(s:hi_group_cursor, '\%#', s:priority + 1)
 
   redraw
 
@@ -88,6 +86,8 @@ function! s:find(motion)
 endfunction
 
 function! s:find_cleanup()
+  call matchdelete(s:cursor)
+
   " Restore the cursor on the command line.
   set guicursor&
   let &guicursor = s:save['guicursor']
@@ -95,16 +95,24 @@ function! s:find_cleanup()
 
   call s:unhighlight_line()
 
-  " Color character stored in semicolon
-  call s:highlight_line(2, s:char)
+  if index(s:chars_s, s:char) != -1
+    call s:highlight_line(s:direction, s:char)
+    for m in filter(getmatches(), printf('v:val.group ==# "%s"', s:hi_group_primary))
+      call matchdelete(m.id)
+    endfor
+
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:primary_color)
+    "
+    let s:ccount = 0
+
+    augroup quick_scope
+      autocmd CursorMoved * call s:custom()
+    augroup END
+  endif
+
+  let s:chars_s = []
 
   " Intentionally return an empty string.
-  return ''
-endfunction
-
-function! s:find_cleanup_cleanup()
-  " call s:unhighlight_line()
-
   return ''
 endfunction
 
@@ -128,9 +136,6 @@ vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 " Autoload --------------------------------------------------------------------
 augroup quick_scope
   " autocmd!
-"   autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
-  autocmd CursorMoved * call s:maybe_unhighlight_line()
-  " autocmd InsertEnter * call s:unhighlight_line()
   autocmd VimEnter,ColorScheme * call s:set_highlight_colors()
 augroup END
 
@@ -141,6 +146,9 @@ let s:priority = 1
 " Highlight group marking first appearance of characters in a line.
 let s:hi_group_primary = 'QuickScopePrimary'
 let s:hi_group_secondary = 'QuickScopeSecondary'
+
+" Highlight group marking temproary cursor when quick-scope is enabled on key
+" press.
 let s:hi_group_cursor = 'QuickScopeCursor'
 
 " Detect if the running instance of Vim acts as a GUI or terminal.
@@ -190,11 +198,13 @@ function! s:set_highlight_colors()
   if !exists('g:qs_first_occurrence_highlight_color')
     " set color to match 'Function' highlight group or bright green
     let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
+    let s:primary_color = g:qs_first_occurrence_highlight_color
   endif
 
   if !exists('g:qs_second_occurrence_highlight_color')
     " set color to match 'Keyword' highlight group or cyan
     let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
+    let s:secondary_color = g:qs_second_occurrence_highlight_color
   endif
 
   call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
@@ -230,6 +240,16 @@ function! s:apply_highlight_patterns(patterns)
   endif
   if !empty(patt_s)
     call matchadd(s:hi_group_secondary, '\v%' . line('.') . 'l(' . patt_s[1:] . ')', s:priority)
+  endif
+endfunction
+
+function! s:get_chars_with_secondary_highlights(chars)
+  let [char_p, char_s] = a:chars
+
+  " @todo: empty vs equality for empty string
+  if char_p != ''
+  elseif char_s != ''
+    call add(s:chars_s, char_s)
   endif
 endfunction
 
@@ -272,6 +292,7 @@ function! s:get_highlight_patterns(line, start, end, target)
   " The position of a character in a word that will be given a highlight. A
   " value of 0 indicates there is no character to highlight.
   let [hi_p, hi_s] = [0, 0]
+  let [char_p, char_s] = ['', '']
 
   " If 1, we're looping forwards from the cursor to the end of the line;
   " otherwise, we're looping from the cursor to the beginning of the line.
@@ -288,10 +309,12 @@ function! s:get_highlight_patterns(line, start, end, target)
     if char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
+        call s:get_chars_with_secondary_highlights([char_p, char_s])
       endif
 
       " We've reached a new word, so reset any highlights.
       let [hi_p, hi_s] = [0, 0]
+      let [char_p, char_s] = ['', '']
 
       let is_first_word = 0
     else
@@ -308,8 +331,10 @@ function! s:get_highlight_patterns(line, start, end, target)
         " mark it for a highlight.
         if occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
           let hi_p = i + 1
+          let char_p = char
         elseif occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
           let hi_s = i + 1
+          let char_s = char
         endif
       endif
     endif
@@ -322,31 +347,28 @@ function! s:get_highlight_patterns(line, start, end, target)
   endwhile
 
   let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
+  call s:get_chars_with_secondary_highlights([char_p, char_s])
 
   return [patt_p, patt_s]
 endfunction
 
 " Can take an optional direction: 0 (backward) or 1 (forward)
-function! s:highlight_line(...)
+function! s:highlight_line(dir, target)
   if g:qs_enable
     let line = getline(line('.'))
     let len = strlen(line)
     let pos = col('.')
 
-    if a:0 > 1
-      let target = a:2
-    else
-      let target = ''
-    endif
+    let target = a:target
 
     if !empty(line)
-      if a:0 == 0 || a:1 != 0
+      if a:dir != 0
         " Highlights after the cursor.
         let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len, target)
         call s:apply_highlight_patterns([patt_p, patt_s])
       endif
 
-      if a:0 == 0 || a:1 != 1
+      if a:dir != 1
         let pos -= 2
         if pos < 0 | let pos = 0 | endif
 
