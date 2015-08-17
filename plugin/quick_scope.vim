@@ -1,4 +1,4 @@
-" Initialize -------------------------------------------------------------------
+" Initialize ------------------------------------------------------------------
 let s:plugin_name = "quick-scope"
 
 if exists('g:loaded_quick_scope')
@@ -24,97 +24,30 @@ unlet! s:plugin_name
 let s:cpo_save = &cpo
 set cpo&vim
 
-" Options " -------------------------------------------------------------------
+" Options ---------------------------------------------------------------------
 if !exists('g:qs_enable')
   let g:qs_enable = 1
 endif
 
-if exists('g:qs_highlight_on_key_press') && g:qs_highlight_on_key_press == 1
-  noremap <unique> <expr> <silent> f <sid>find('f') . <sid>find_cleanup()
-  noremap <unique> <expr> <silent> F <sid>find('F') . <sid>find_cleanup()
-  noremap <unique> <expr> <silent> t <sid>find('t') . <sid>find_cleanup()
-  noremap <unique> <expr> <silent> T <sid>find('T') . <sid>find_cleanup()
-else
-  augroup quick_scope
-    autocmd!
-    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line()
-    autocmd InsertEnter * call s:unhighlight_line()
-    " autocmd VimEnter,ColorScheme * call s:set_highlight_colors()
-  augroup END
+" Change this to an option for a future update...
+if !exists('s:accepted_chars')
+  " Keys correspond to characters that can be highlighted. Values aren't used.
+  let s:accepted_chars = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0, 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0, '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0,}
 endif
 
-let s:chars_s = []
-
-function! s:custom()
-  let s:ccount = s:ccount + 1
-  if s:ccount == 2
-    call s:unhighlight_line()
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_color)
-    autocmd! quick_scope CursorMoved
-  endif
-endfunction
-
-function! s:find(motion)
-  " reset
-  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_color)
-  call s:unhighlight_line()
-  autocmd! quick_scope CursorMoved
-
-  if (a:motion ==# 'f' || a:motion ==# 't')
-    let s:direction = 1
-  else
-    let s:direction = 0
-  endif
-
-  call s:highlight_line(s:direction, '')
-
-  " Keep the cursor visible in the editor.
-  let s:cursor = matchadd(s:hi_group_cursor, '\%#', s:priority + 1)
-
-  redraw
-
-  let s:save = {'t_ve': &t_ve , 'guicursor': &guicursor}
-
-  " Hide the cursor on the command line.
-  set t_ve=
-  set guicursor=n:block-NONE
-
-  " Store the target for the character motion.
-  let s:char = nr2char(getchar())
-
-  return a:motion . s:char
-endfunction
-
-function! s:find_cleanup()
-  call matchdelete(s:cursor)
-
-  " Restore the cursor on the command line.
-  set guicursor&
-  let &guicursor = s:save['guicursor']
-  let &t_ve = s:save['t_ve']
-
-  call s:unhighlight_line()
-
-  if index(s:chars_s, s:char) != -1
-    call s:highlight_line(s:direction, s:char)
-    for m in filter(getmatches(), printf('v:val.group ==# "%s"', s:hi_group_primary))
-      call matchdelete(m.id)
-    endfor
-
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:primary_color)
-    "
-    let s:ccount = 0
-
-    augroup quick_scope
-      autocmd CursorMoved * call s:custom()
-    augroup END
-  endif
-
-  let s:chars_s = []
-
-  " Intentionally return an empty string.
-  return ''
-endfunction
+if !exists('g:qs_highlight_on_keys')
+  " Vanilla mode. Highlight on cursor movement.
+  augroup quick_scope
+    autocmd!
+    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line(2, s:accepted_chars)
+    autocmd InsertEnter * call s:unhighlight_line()
+  augroup END
+else
+  " Highlight on key press. Set an 'augmented' mapping for each defined key.
+  for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
+      execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload()', motion, motion)
+  endfor
+endif
 
 " User commands ---------------------------------------------------------------
 function! s:toggle()
@@ -123,7 +56,7 @@ function! s:toggle()
     call <sid>unhighlight_line()
   else
     let g:qs_enable = 1
-    call <sid>highlight_line()
+    doautocmd CursorMoved
   endif
 endfunction
 
@@ -133,24 +66,7 @@ command! -nargs=0 QuickScopeToggle call s:toggle()
 nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
 vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
-" Autoload --------------------------------------------------------------------
-augroup quick_scope
-  " autocmd!
-  autocmd VimEnter,ColorScheme * call s:set_highlight_colors()
-augroup END
-
 " Colors ----------------------------------------------------------------------
-" Priority for overruling other highlight matches.
-let s:priority = 1
-
-" Highlight group marking first appearance of characters in a line.
-let s:hi_group_primary = 'QuickScopePrimary'
-let s:hi_group_secondary = 'QuickScopeSecondary'
-
-" Highlight group marking temproary cursor when quick-scope is enabled on key
-" press.
-let s:hi_group_cursor = 'QuickScopeCursor'
-
 " Detect if the running instance of Vim acts as a GUI or terminal.
 function! s:get_term()
   if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR)
@@ -195,24 +111,31 @@ endfunction
 
 " Set the colors used for highlighting.
 function! s:set_highlight_colors()
+  " Priority for overruling other highlight matches.
+  let s:priority = 1
+
+  " Highlight group marking first appearance of characters in a line.
+  let s:hi_group_primary = 'QuickScopePrimary'
+  let s:hi_group_secondary = 'QuickScopeSecondary'
+
+  " Highlight group marking dummy cursor when quick-scope is enabled on key
+  " press.
+  let s:hi_group_cursor = 'QuickScopeCursor'
+
   if !exists('g:qs_first_occurrence_highlight_color')
     " set color to match 'Function' highlight group or bright green
     let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
-    let s:primary_color = g:qs_first_occurrence_highlight_color
   endif
 
   if !exists('g:qs_second_occurrence_highlight_color')
     " set color to match 'Keyword' highlight group or cyan
     let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
-    let s:secondary_color = g:qs_second_occurrence_highlight_color
   endif
 
   call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
   call s:add_to_highlight_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
   call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
   call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
-
-  " Cursor
   execute printf("highlight link %s Cursor", s:hi_group_cursor)
 
   " Preserve the background color of cursorline if it exists.
@@ -226,7 +149,9 @@ function! s:set_highlight_colors()
   endif
 endfunction
 
-" Primary functions -----------------------------------------------------------
+call s:set_highlight_colors()
+
+" Main highlighting functions -------------------------------------------------
 " Apply the highlights for each highlight group based on pattern strings.
 "
 " Arguments are expected to be lists of two items.
@@ -243,12 +168,15 @@ function! s:apply_highlight_patterns(patterns)
   endif
 endfunction
 
-function! s:get_chars_with_secondary_highlights(chars)
+" Keep track of which characters have a secondary highlight (but no primary
+" highlight) and store them in :chars_s. Used when g:qs_highlight_on_keys is
+" active to decide whether to trigger an extra highlight.
+function! s:save_chars_with_secondary_highlights(chars)
   let [char_p, char_s] = a:chars
 
-  " @todo: empty vs equality for empty string
-  if char_p != ''
-  elseif char_s != ''
+  if !empty(char_p)
+    " Do nothing
+  elseif !empty(char_s)
     call add(s:chars_s, char_s)
   endif
 endfunction
@@ -271,27 +199,25 @@ endfunction
 
 " Finds which characters to highlight and returns their column positions as a
 " pattern string.
-function! s:get_highlight_patterns(line, start, end, target)
+function! s:get_highlight_patterns(line, start, end, targets)
+  " Keeps track of the number of occurrences for each target.
+  let occurrences = {}
+
   " Patterns to match the characters that will be marked with primary and
   " secondary highlight groups, respectively
   let [patt_p, patt_s] = ['', '']
-
-  " Keys correspond to characters that can be highlighted. Values refer to
-  " occurrences of each character on a line.
-  if a:target == ''
-    let accepted_chars = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0, 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0, '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0,}
-  else
-    let accepted_chars = {}
-    let accepted_chars[a:target] = 0
-  endif
 
   " Indicates whether this is the first word under the cursor. We don't want
   " to highlight any characters in it.
   let is_first_word = 1
 
-  " The position of a character in a word that will be given a highlight. A
+  " The positions of the (next) characters that will be given a highlight. A
   " value of 0 indicates there is no character to highlight.
   let [hi_p, hi_s] = [0, 0]
+
+  " The (next) characters that will be given a highlight. Used by
+  " save_chars_with_secondary_highlights() to see whether an extra highlight
+  " should be triggered if g:qs_highlight_on_keys is active.
   let [char_p, char_s] = ['', '']
 
   " If 1, we're looping forwards from the cursor to the end of the line;
@@ -306,10 +232,13 @@ function! s:get_highlight_patterns(line, start, end, target)
     " as the start of a new word.
     "
     " Check for a <space> as a first condition for optimization.
-    if char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
+    if char == "\<space>" || !has_key(a:targets, char) || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
-        call s:get_chars_with_secondary_highlights([char_p, char_s])
+
+        if exists('g:qs_highlight_on_keys')
+          call s:save_chars_with_secondary_highlights([char_p, char_s])
+        endif
       endif
 
       " We've reached a new word, so reset any highlights.
@@ -318,10 +247,14 @@ function! s:get_highlight_patterns(line, start, end, target)
 
       let is_first_word = 0
     else
-      let accepted_chars[char] += 1
+      if has_key(occurrences, char)
+        let occurrences[char] += 1
+      else
+        let occurrences[char] = 1
+      endif
 
       if !is_first_word
-        let occurrences = get(accepted_chars, char)
+        let n = get(occurrences, char)
 
         " If the search is forward, we want to be greedy; otherwise, we
         " want to be reluctant. This prioritizes highlighting for
@@ -329,10 +262,10 @@ function! s:get_highlight_patterns(line, start, end, target)
         "
         " If this is the first occurence of the letter in the word,
         " mark it for a highlight.
-        if occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
+        if n == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
           let hi_p = i + 1
           let char_p = char
-        elseif occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
+        elseif n == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
           let hi_s = i + 1
           let char_s = char
         endif
@@ -347,33 +280,35 @@ function! s:get_highlight_patterns(line, start, end, target)
   endwhile
 
   let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
-  call s:get_chars_with_secondary_highlights([char_p, char_s])
+
+  if exists('g:qs_highlight_on_keys')
+    call s:save_chars_with_secondary_highlights([char_p, char_s])
+  endif
 
   return [patt_p, patt_s]
 endfunction
 
-" Can take an optional direction: 0 (backward) or 1 (forward)
-function! s:highlight_line(dir, target)
+" The direction can be 0 (backward), 1 (forward) or 2 (both). Targets are the
+" characters that can be highlighted.
+function! s:highlight_line(direction, targets)
   if g:qs_enable
     let line = getline(line('.'))
     let len = strlen(line)
     let pos = col('.')
 
-    let target = a:target
-
     if !empty(line)
-      if a:dir != 0
-        " Highlights after the cursor.
-        let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len, target)
+      " Highlight after the cursor.
+      if a:direction != 0
+        let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len, a:targets)
         call s:apply_highlight_patterns([patt_p, patt_s])
       endif
 
-      if a:dir != 1
+      " Highlight before the cursor.
+      if a:direction != 1
         let pos -= 2
         if pos < 0 | let pos = 0 | endif
 
-        " Highlights before the cursor.
-        let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, -1, target)
+        let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, -1, a:targets)
         call s:apply_highlight_patterns([patt_p, patt_s])
       endif
     endif
@@ -384,6 +319,127 @@ function! s:unhighlight_line()
   for m in filter(getmatches(), printf('v:val.group ==# "%s" || v:val.group ==# "%s"', s:hi_group_primary, s:hi_group_secondary))
     call matchdelete(m.id)
   endfor
+endfunction
+
+" Highlight on key press ------------------------------------------------------
+" Manage state for keeping or removing the extra highlight after triggering a
+" highlight on key press.
+"
+" State can be 0 (extra highlight has just been triggered), 1 (the cursor has
+" moved while an extra highlight is active), or 2 (cancel an active extra
+" highlight).
+function! s:handle_extra_highlight(state)
+  if a:state == 0
+    let s:cursor_moved_count = 0
+  elseif a:state == 1
+    let s:cursor_moved_count = s:cursor_moved_count + 1
+  endif
+
+  " If the cursor has moved more than once since the extra highlight has been
+  " active (or the state is 2), reset the extra highlight.
+  if exists('s:cursor_moved_count') && (a:state == 2 ||  s:cursor_moved_count > 1)
+    call s:unhighlight_line()
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
+    autocmd! quick_scope CursorMoved
+  endif
+endfunction
+
+" Set or reset flags and state for highlighting on key press.
+function! s:ready()
+  " Direction of highlight search. 0 is backward, 1 is forward
+  let s:direction = 0
+
+  " The corresponding character to f,F,t or T
+  let s:target = ''
+
+  " Position of where a dummy cursor should be placed.
+  let s:cursor = 0
+
+  " Terminal and gui cursors which will be hidden and shown.
+  let s:t_ve = &t_ve
+  let s:guicursor = &guicursor
+
+  " Characters with secondary highlights. Modified by get_highlight_patterns()
+  let s:chars_s = []
+
+  call s:handle_extra_highlight(2)
+
+  " Intentionally return an empty string that will be concatenated with the
+  " return values from aim() and reload().
+  return ''
+endfunction
+
+" Returns {character motion}{captured char} (to map to a character motion) to
+" emulate one as closely as possible.
+function! s:aim(motion)
+  if (a:motion ==# 'f' || a:motion ==# 't')
+    let s:direction = 1
+  else
+    let s:direction = 0
+  endif
+
+  " Add a dummy cursor since calling getchar() places the actual cursor on
+  " the command line.
+  let s:cursor = matchadd(s:hi_group_cursor, '\%#', s:priority + 1)
+
+  " Save and hide the cursor on the command line.
+  let s:t_ve = &t_ve
+  let s:guicursor = &guicursor
+
+  set t_ve=
+  set guicursor=n:block-NONE
+
+  call s:highlight_line(s:direction, s:accepted_chars)
+
+  redraw
+
+  " Store and capture the target for the character motion.
+  let s:target = nr2char(getchar())
+
+  return a:motion . s:target
+endfunction
+
+" Cleanup after a character motion is executed.
+function! s:reload()
+  call matchdelete(s:cursor)
+
+  " Restore the cursor on the command line.
+  set guicursor&
+  let &t_ve = s:t_ve
+  let &guicursor = s:guicursor
+
+  call s:unhighlight_line()
+
+  " If the target has a highlighted secondary occurence, keep it highlighted.
+  if index(s:chars_s, s:target) != -1
+    " Warning: slight hack below. Although the cursor has already moved by this
+    " point, col('.') won't return the updated cursor position until the
+    " invoking mapping completes. So when highlight_line() is called here, the
+    " first occurrence of the target will be under the cursor, and the second
+    " occurrence will be where the first occurence should have been.
+    call s:highlight_line(s:direction, {expand(s:target) : ''})
+
+    " Unhighlight only primary highlights (i.e., the character under the
+    " cursor).
+    for m in filter(getmatches(), printf('v:val.group ==# "%s"', s:hi_group_primary))
+      call matchdelete(m.id)
+    endfor
+
+    " Temporarily change the second occurrence highlight color to a primary
+    " highlight color.
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_first_occurrence_highlight_color)
+
+    " Set a temporary event to keep track of when to reset the extra highlight.
+    augroup quick_scope
+      autocmd CursorMoved * call s:handle_extra_highlight(1)
+    augroup END
+
+    call s:handle_extra_highlight(0)
+  endif
+
+  " Intentionally return an empty string that will concatenated with the
+  " return values from ready() and aim().
+  return ''
 endfunction
 
 let &cpo = s:cpo_save
