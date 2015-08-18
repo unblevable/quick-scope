@@ -166,7 +166,7 @@ endfunction
 
 " Finds which characters to highlight and returns their column positions as a
 " pattern string.
-function! s:get_highlight_patterns(line, start, end)
+function! s:get_highlight_patterns(line, cursor, end)
     " Patterns to match the characters that will be marked with primary and
     " secondary highlight groups, respectively
     let [patt_p, patt_s] = ['', '']
@@ -179,23 +179,50 @@ function! s:get_highlight_patterns(line, start, end)
     " to highlight any characters in it.
     let is_first_word = 1
 
+    " We want to skip the first char as this is the char the cursor is at
+    let is_first_char = 1
+
     " The position of a character in a word that will be given a highlight. A
     " value of 0 indicates there is no character to highlight.
     let [hi_p, hi_s] = [0, 0]
 
     " If 1, we're looping forwards from the cursor to the end of the line;
     " otherwise, we're looping from the cursor to the beginning of the line.
-    let direction = a:start < a:end ? 1 : 0
+    let direction = a:cursor < a:end ? 1 : 0
 
-    let i = a:start
-    while i != a:end
-        let char = a:line[i]
+    " find the character index i and the byte index c
+    " of the current cursor position
+    let c = 1
+    let i = 0
+    let char = ''
+    while c != a:cursor
+      let char = matchstr(a:line, ".", byteidx(a:line, i))
+      let c += len(char)
+      let i += 1
+    endwhile
+
+    " reposition cursor to end of the char's composing bytes
+    if !direction
+      let c += len(matchstr(a:line, ".", byteidx(a:line, i))) - 1
+    endif
+
+    " catch cases where multibyte chars may result in c not exactly equal to
+    " a:end
+    while (direction && c <= a:end || !direction && c >= a:end - 1)
+
+        let char = matchstr(a:line, ".", byteidx(a:line, i))
+
+        " Skips the first char as it is the char the cursor is at
+        if is_first_char
+
+          let is_first_char = 0
 
         " Don't consider the character for highlighting, but mark the position
         " as the start of a new word.
         "
         " Check for a <space> as a first condition for optimization.
-        if char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
+
+        elseif char == "\<space>" || !has_key(accepted_chars, char) || empty(char)
             if !is_first_word
                 let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
             endif
@@ -216,19 +243,28 @@ function! s:get_highlight_patterns(line, start, end)
                 "
                 " If this is the first occurence of the letter in the word,
                 " mark it for a highlight.
+                " If we are looking backwards, c will point to the end of the
+                " end of composing bytes so we adjust accordingly
+                " eg. with a multibyte char of length 3, c will point to the
+                " 3rd byte. Minus (len(char) - 1) to adjust to 1st byte
                 if occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
-                    let hi_p = i + 1
+                    let hi_p = c - (1 - direction) * (len(char) - 1)
                 elseif occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
-                    let hi_s = i + 1
+                    let hi_s = c - (1 - direction) * (len(char)- 1)
                 endif
             endif
         endif
 
+        " update i to next character
+        " update c to next byteindex
         if direction == 1
             let i += 1
+            let c += strlen(char)
         else
             let i -= 1
+            let c -= strlen(char)
         endif
+
     endwhile
 
     let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
@@ -239,19 +275,17 @@ endfunction
 function! s:highlight_line()
     if g:qs_enable
         let line = getline(line('.'))
-        let len = strlen(line)
+        let len = len(line)
         let pos = col('.')
 
         if !empty(line)
+
             " Highlights after the cursor.
             let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len)
             call s:apply_highlight_patterns([patt_p, patt_s])
 
-            let pos -= 2
-            if pos < 0 | let pos = 0 | endif
-
             " Highlights before the cursor.
-            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, -1)
+            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, 0)
             call s:apply_highlight_patterns([patt_p, patt_s])
         endif
     endif
