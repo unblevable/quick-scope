@@ -45,7 +45,7 @@ if !exists('g:qs_highlight_on_keys')
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
-      execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload()', motion, motion)
+      execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
   endfor
 endif
 
@@ -365,7 +365,7 @@ function! s:ready()
   call s:handle_extra_highlight(2)
 
   " Intentionally return an empty string that will be concatenated with the
-  " return values from aim() and reload().
+  " return values from aim(), reload() and double_tap().
   return ''
 endfunction
 
@@ -389,6 +389,12 @@ function! s:aim(motion)
   set t_ve=
   set guicursor=n:block-NONE
 
+  " Silence 'Type :quit<Enter> to exit Vim' message on <c-c> during a character
+  " search.
+  "
+  " This line also causes getchar() to cleanly cancel on a <c-c>.
+  execute 'nnoremap <silent> <c-c> <c-c>'
+
   call s:highlight_line(s:direction, s:accepted_chars)
 
   redraw
@@ -401,6 +407,7 @@ endfunction
 
 " Cleanup after a character motion is executed.
 function! s:reload()
+  " Remove dummy cursor
   call matchdelete(s:cursor)
 
   " Restore the cursor on the command line.
@@ -408,9 +415,18 @@ function! s:reload()
   let &t_ve = s:t_ve
   let &guicursor = s:guicursor
 
+" Restore default <c-c> functionality
+  execute 'nunmap <c-c>'
+
   call s:unhighlight_line()
 
-  " If the target has a highlighted secondary occurence, keep it highlighted.
+  " Intentionally return an empty string.
+  return ''
+endfunction
+
+" Trigger an extra highlight for a target character only if it originally had a
+" secondary highlight.
+function! s:double_tap()
   if index(s:chars_s, s:target) != -1
     " Warning: slight hack below. Although the cursor has already moved by this
     " point, col('.') won't return the updated cursor position until the
@@ -437,8 +453,7 @@ function! s:reload()
     call s:handle_extra_highlight(0)
   endif
 
-  " Intentionally return an empty string that will concatenated with the
-  " return values from ready() and aim().
+  " Intentionally return an empty string.
   return ''
 endfunction
 
