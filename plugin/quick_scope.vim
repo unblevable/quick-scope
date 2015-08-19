@@ -208,7 +208,7 @@ function! s:get_highlight_patterns(line, cursor, end)
 
     " catch cases where multibyte chars may result in c not exactly equal to
     " a:end
-    while (direction && c <= a:end || !direction && c >= a:end - 1)
+    while (direction && c <= a:end || !direction && c >= a:end)
 
         let char = matchstr(a:line, ".", byteidx(a:line, i))
 
@@ -285,7 +285,7 @@ function! s:highlight_line()
             call s:apply_highlight_patterns([patt_p, patt_s])
 
             " Highlights before the cursor.
-            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, 0)
+            let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, 1)
             call s:apply_highlight_patterns([patt_p, patt_s])
         endif
     endif
