@@ -1,4 +1,4 @@
-" Initialize ------------------------------------------------------------------
+" Initialize -----------------------------------------------------------------
 let s:plugin_name = "quick-scope"
 
 if exists('g:loaded_quick_scope')
@@ -24,7 +24,7 @@ unlet! s:plugin_name
 let s:cpo_save = &cpo
 set cpo&vim
 
-" Options ---------------------------------------------------------------------
+" Options --------------------------------------------------------------------
 if !exists('g:qs_enable')
   let g:qs_enable = 1
 endif
@@ -49,7 +49,7 @@ else
   endfor
 endif
 
-" User commands ---------------------------------------------------------------
+" User commands --------------------------------------------------------------
 function! s:toggle()
   if g:qs_enable
     let g:qs_enable = 0
@@ -62,11 +62,11 @@ endfunction
 
 command! -nargs=0 QuickScopeToggle call s:toggle()
 
-" Plug mappings ---------------------------------------------------------------
+" Plug mappings --------------------------------------------------------------
 nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
 vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
-" Colors ----------------------------------------------------------------------
+" Colors ---------------------------------------------------------------------
 " Detect if the running instance of Vim acts as a GUI or terminal.
 function! s:get_term()
   if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR)
@@ -151,7 +151,7 @@ endfunction
 
 call s:set_highlight_colors()
 
-" Main highlighting functions -------------------------------------------------
+" Main highlighting functions ------------------------------------------------
 " Apply the highlights for each highlight group based on pattern strings.
 "
 " Arguments are expected to be lists of two items.
@@ -321,7 +321,7 @@ function! s:unhighlight_line()
   endfor
 endfunction
 
-" Highlight on key press ------------------------------------------------------
+" Highlight on key press -----------------------------------------------------
 " Manage state for keeping or removing the extra highlight after triggering a
 " highlight on key press.
 "
@@ -389,8 +389,8 @@ function! s:aim(motion)
   set t_ve=
   set guicursor=n:block-NONE
 
-  " Silence 'Type :quit<Enter> to exit Vim' message on <c-c> during a character
-  " search.
+  " Silence 'Type :quit<Enter> to exit Vim' message on <c-c> during a
+  " character search.
   "
   " This line also causes getchar() to cleanly cancel on a <c-c>.
   execute 'nnoremap <silent> <c-c> <c-c>'
@@ -424,12 +424,12 @@ function! s:reload()
   return ''
 endfunction
 
-" Trigger an extra highlight for a target character only if it originally had a
-" secondary highlight.
+" Trigger an extra highlight for a target character only if it originally had
+" a secondary highlight.
 function! s:double_tap()
   if index(s:chars_s, s:target) != -1
-    " Warning: slight hack below. Although the cursor has already moved by this
-    " point, col('.') won't return the updated cursor position until the
+    " Warning: slight hack below. Although the cursor has already moved by
+    " this point, col('.') won't return the updated cursor position until the
     " invoking mapping completes. So when highlight_line() is called here, the
     " first occurrence of the target will be under the cursor, and the second
     " occurrence will be where the first occurence should have been.
@@ -445,7 +445,8 @@ function! s:double_tap()
     " highlight color.
     call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_first_occurrence_highlight_color)
 
-    " Set a temporary event to keep track of when to reset the extra highlight.
+    " Set a temporary event to keep track of when to reset the extra
+    " highlight.
     augroup quick_scope
       autocmd CursorMoved * call s:handle_extra_highlight(1)
     augroup END
