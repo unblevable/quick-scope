@@ -1,6 +1,6 @@
 *quick-scope.txt*
 
-Version:    1.0.0
+Version:    1.1.0
 Homepage:   https://github.com/unblevable/quick-scope
 Author:     Brian Le (unblevable)
 License:    MIT
@@ -13,8 +13,9 @@ License:    MIT
     2.1 Example ............................... |qs-example|
   3. Features ................................. |qs-features|
   4. Options .................................. |qs-options|
-    4.1 Customize colors ...................... |qs-customize-colors|
-    4.2 Toggle highlighting ................... |qs-toggle-highlighting|
+    4.1 Highlight on key press ................ |qs-highlight-on-key-press|
+    4.2 Customize colors ...................... |qs-customize-colors|
+    4.3 Toggle highlighting ................... |qs-toggle-highlighting|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -83,7 +84,19 @@ move to it.
  4. OPTIONS                                                       *qs-options*
 ==============================================================================
 
- 4.1 CUSTOMIZE COLORS                                    *qs-customize-colors*
+ 4.1 HIGHLIGHT ON KEY PRESS                        *qs-highlight-on-key-press*
+------------------------------------------------------------------------------
+
+                                                      *g:qs_highlight_on_keys*
+Trigger a highlight in the appropriate direction when pressing these keys:
+>
+  let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+<
+Trigger a highlight only when pressing |f| and |F|.
+>
+  let g:qs_highlight_on_keys = ['f', 'F']
+<
+ 4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
 ------------------------------------------------------------------------------
 
                                        *g:qs_first_occurrence_highlight_color*
@@ -110,7 +123,7 @@ Terminal Vim~
 >
   let g:qs_second_occurrence_highlight_color = 81
 <
- 4.2 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
+ 4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------
 
                                                            *:QuickScopeToggle*
@@ -151,7 +164,7 @@ http://github.com/unblevable/quick-scope/issues
   the cursor moves.
 
   Let me know if this plugin slows down Vim to an unmanageable level. Using
-  |:QuickScopeToggle| make sure that it is acutally this plugin that is
+  |:QuickScopeToggle|, make sure that it is actually this plugin that is
   causing performance problems you are experiencing.
 
  7. CHANGELOG                                                   *qs-changelog*
@@ -159,15 +172,17 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 1.1.0     2015-08-20 * Added
+                        - Added |g:qs_highlight_on_keys| option
  1.0.1     2015-08-02 * Changed
                         - Made the help doc link consistent with the plugin's
-                          name (quick-scope).
+                          name (quick-scope)
                         Fixed
                         - The highlight color selection on startup is more
                           robust.
-                        - Works with Neovim with true color enabled.
+                        - Works with Neovim with true color enabled
 |---------|-----------|-----------------------------------------------------------|
- 1.0.0     2015-08-02 * Initial upload.
+ 1.0.0     2015-08-02 * Initial upload
 
 ==============================================================================
 vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:
