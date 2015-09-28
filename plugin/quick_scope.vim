@@ -89,7 +89,7 @@ function! s:set_default_color(group, co_gui, co_256, co_16)
     let color = synIDattr(synIDtrans(hlID(a:group)), 'fg', term)
   endif
 
-  if color == -1 || !exists('color')
+  if !exists('color')
     if term ==# 'gui'
       let color = a:co_gui
     else
