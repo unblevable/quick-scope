@@ -55,12 +55,12 @@ You should see at least one highlighted character in all but one 'word'.
 A character is highlighted with a |primary-color|/|secondary-color| if it is
 the first/second occurrence of that character from your cursor on a line.
 
-Use |f|/|F| + {char} to jump directly to any character with a primary
-highlight forward/backward.
+Use |f|<char> or |F|<char> to jump directly to any character with a primary
+highlight forward or backward.
 
 The `h` in `the` should be the only character with a secondary highlight if
-your cursor at the beginning of the example. Use |f| + h + |;| to quickly
-move to it.
+your cursor is at the beginning of the example. Use |fh;| to quickly move to
+it.
 
  3. FEATURES                                                     *qs-features*
 ==============================================================================
