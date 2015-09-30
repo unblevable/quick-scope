@@ -45,9 +45,14 @@ if !exists('g:qs_highlight_on_keys')
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
-      execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
+    execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
   endfor
 endif
+
+" Autocommands ---------------------------------------------------------------
+augroup quick_scope
+  autocmd ColorScheme * call s:set_highlight_colors()
+augroup END
 
 " User commands --------------------------------------------------------------
 function! s:toggle()
@@ -89,7 +94,7 @@ function! s:set_default_color(group, co_gui, co_256, co_16)
     let color = synIDattr(synIDtrans(hlID(a:group)), 'fg', term)
   endif
 
-  if color == -1 || !exists('color')
+  if !exists('color')
     if term ==# 'gui'
       let color = a:co_gui
     else
@@ -123,19 +128,23 @@ function! s:set_highlight_colors()
   let s:hi_group_cursor = 'QuickScopeCursor'
 
   if !exists('g:qs_first_occurrence_highlight_color')
-    " set color to match 'Function' highlight group or bright green
-    let g:qs_first_occurrence_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
+    " set color to match 'Function' highlight group or lime green
+    let s:primary_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
+  else
+    let s:primary_highlight_color = g:qs_first_occurrence_highlight_color
   endif
 
   if !exists('g:qs_second_occurrence_highlight_color')
     " set color to match 'Keyword' highlight group or cyan
-    let g:qs_second_occurrence_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
+    let s:secondary_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
+  else
+    let s:secondary_highlight_color = g:qs_second_occurrence_highlight_color
   endif
 
   call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_primary, 'fg', g:qs_first_occurrence_highlight_color)
+  call s:add_to_highlight_group(s:hi_group_primary, 'fg', s:primary_highlight_color)
   call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
+  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
   execute printf("highlight link %s Cursor", s:hi_group_cursor)
 
   " Preserve the background color of cursorline if it exists.
@@ -186,8 +195,8 @@ function! s:add_to_highlight_patterns(patterns, highlights)
   let [patt_p, patt_s] = a:patterns
   let [hi_p, hi_s] = a:highlights
 
-  " If there is a primary highlight for the last word, add it to
-  " the primary highlight pattern.
+  " If there is a primary highlight for the last word, add it to the primary
+  " highlight pattern.
   if hi_p > 0
     let patt_p = printf("%s|%%%sc", patt_p, hi_p)
   elseif hi_s > 0
@@ -200,7 +209,7 @@ endfunction
 " Finds which characters to highlight and returns their column positions as a
 " pattern string.
 function! s:get_highlight_patterns(line, start, end, targets)
-  " Keeps track of the number of occurrences for each target.
+  " Keeps track of the number of occurrences for each target
   let occurrences = {}
 
   " Patterns to match the characters that will be marked with primary and
@@ -256,12 +265,12 @@ function! s:get_highlight_patterns(line, start, end, targets)
       if !is_first_word
         let n = get(occurrences, char)
 
-        " If the search is forward, we want to be greedy; otherwise, we
-        " want to be reluctant. This prioritizes highlighting for
-        " characters at the beginning of a word.
+        " If the search is forward, we want to be greedy; otherwise, we want
+        " to be reluctant. This prioritizes highlighting for characters at the
+        " beginning of a word.
         "
-        " If this is the first occurence of the letter in the word,
-        " mark it for a highlight.
+        " If this is the first occurence of the letter in the word, mark it
+        " for a highlight.
         if n == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
           let hi_p = i + 1
           let char_p = char
@@ -339,7 +348,7 @@ function! s:handle_extra_highlight(state)
   " active (or the state is 2), reset the extra highlight.
   if exists('s:cursor_moved_count') && (a:state == 2 ||  s:cursor_moved_count > 1)
     call s:unhighlight_line()
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_second_occurrence_highlight_color)
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
     autocmd! quick_scope CursorMoved
   endif
 endfunction
@@ -415,7 +424,7 @@ function! s:reload()
   let &t_ve = s:t_ve
   let &guicursor = s:guicursor
 
-" Restore default <c-c> functionality
+  " Restore default <c-c> functionality
   execute 'nunmap <c-c>'
 
   call s:unhighlight_line()
@@ -443,7 +452,7 @@ function! s:double_tap()
 
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', g:qs_first_occurrence_highlight_color)
+    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:primary_highlight_color)
 
     " Set a temporary event to keep track of when to reset the extra
     " highlight.
