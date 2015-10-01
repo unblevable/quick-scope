@@ -24,6 +24,12 @@ unlet! s:plugin_name
 let s:cpo_save = &cpo
 set cpo&vim
 
+" Autocommands ---------------------------------------------------------------
+augroup quick_scope
+  autocmd!
+  autocmd ColorScheme * call s:set_highlight_colors()
+augroup END
+
 " Options --------------------------------------------------------------------
 if !exists('g:qs_enable')
   let g:qs_enable = 1
@@ -38,7 +44,6 @@ endif
 if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
   augroup quick_scope
-    autocmd!
     autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line(2, s:accepted_chars)
     autocmd InsertEnter * call s:unhighlight_line()
   augroup END
@@ -48,11 +53,6 @@ else
     execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
   endfor
 endif
-
-" Autocommands ---------------------------------------------------------------
-augroup quick_scope
-  autocmd ColorScheme * call s:set_highlight_colors()
-augroup END
 
 " User commands --------------------------------------------------------------
 function! s:toggle()
