@@ -12,9 +12,8 @@ if &compatible
   finish
 endif
 
-" @todo: Actually test which versions of Vim this plugin supports.
-if v:version < 700
-  echoerr s:plugin_name . " requires Vim running in version 7 or later."
+if v:version < 701 || (v:version == 701 && !has('patch040'))
+  echoerr s:plugin_name . " requires Vim running in version 7.1.040 or later."
   finish
 endif
 
