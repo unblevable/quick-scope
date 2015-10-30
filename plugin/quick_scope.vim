@@ -198,7 +198,8 @@ function! s:add_to_highlight_patterns(patterns, highlights)
   " highlight pattern.
   if hi_p > 0
     let patt_p = printf("%s|%%%sc", patt_p, hi_p)
-  elseif hi_s > 0
+  endif
+  if hi_s > 0
     let patt_s = printf("%s|%%%sc", patt_s, hi_s)
   endif
 
@@ -241,19 +242,15 @@ function! s:get_highlight_patterns(line, start, end, targets)
     "
     " Check for a <space> as a first condition for optimization.
     if char == "\<space>" || !has_key(a:targets, char) || empty(char)
-      if !is_first_word
-        let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
-
-        if exists('g:qs_highlight_on_keys')
-          call s:save_chars_with_secondary_highlights([char_p, char_s])
-        endif
-      endif
+      " if !is_first_word
+      "
+      " endif
 
       " We've reached a new word, so reset any highlights.
-      let [hi_p, hi_s] = [0, 0]
-      let [char_p, char_s] = ['', '']
+      " let [hi_p, hi_s] = [0, 0]
+      " let [char_p, char_s] = ['', '']
 
-      let is_first_word = 0
+      " let is_first_word = 0
     else
       if has_key(occurrences, char)
         let occurrences[char] += 1
@@ -261,7 +258,7 @@ function! s:get_highlight_patterns(line, start, end, targets)
         let occurrences[char] = 1
       endif
 
-      if !is_first_word
+      " if !is_first_word
         let n = get(occurrences, char)
 
         " If the search is forward, we want to be greedy; otherwise, we want
@@ -270,14 +267,19 @@ function! s:get_highlight_patterns(line, start, end, targets)
         "
         " If this is the first occurence of the letter in the word, mark it
         " for a highlight.
-        if n == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
+        if n == 1
           let hi_p = i + 1
           let char_p = char
-        elseif n == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
+        elseif n == 2
           let hi_s = i + 1
           let char_s = char
         endif
-      endif
+
+        let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
+        if exists('g:qs_highlight_on_keys')
+          call s:save_chars_with_secondary_highlights([char_p, char_s])
+        endif
+      " endif
     endif
 
     if direction == 1
