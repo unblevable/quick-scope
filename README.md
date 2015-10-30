@@ -1,4 +1,4 @@
-# quick-scope
+# hard-scope (experimental)
 A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F</kbd> and family. **No mappings are needed**.
 
 ![screencast3](https://cloud.githubusercontent.com/assets/723755/8230149/6ecbed28-158b-11e5-9474-89e846e7682c.gif)
