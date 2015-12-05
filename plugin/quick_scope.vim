@@ -150,7 +150,7 @@ function! s:set_highlight_colors()
   if &cursorline
     let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
 
-    if bg_color != -1
+    if bg_color != -1 && bg_color != ''
       call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
       call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
     endif
