@@ -34,6 +34,11 @@ if !exists('g:qs_enable')
   let g:qs_enable = 1
 endif
 
+if !exists('g:qs_max_chars')
+  " Bail out after so many chars on one line - like syntax highlighting does
+  let g:qs_max_chars = 1000
+endif
+
 " Change this to an option for a future update...
 if !exists('s:accepted_chars')
   " Keys correspond to characters that can be highlighted. Values aren't used.
@@ -233,7 +238,8 @@ function! s:get_highlight_patterns(line, start, end, targets)
   let direction = a:start < a:end ? 1 : 0
 
   let i = a:start
-  while i != a:end
+  let i_max = direction ? min([a:start + g:qs_max_chars, a:end]) : max([a:start - g:qs_max_chars, -1])
+  while direction ? i < i_max : i > i_max
     let char = a:line[i]
 
     " Don't consider the character for highlighting, but mark the position
