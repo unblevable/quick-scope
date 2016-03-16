@@ -110,7 +110,9 @@ endfunction
 
 " Set or append to a custom highlight group.
 function! s:add_to_highlight_group(group, attr, color)
-  execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
+  if a:color != -1 && a:color != ""
+    execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
+  endif
 endfunction
 
 " Set the colors used for highlighting.
@@ -150,10 +152,8 @@ function! s:set_highlight_colors()
   if &cursorline
     let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
 
-    if bg_color != -1
-      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
-      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
-    endif
+    call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
+    call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
   endif
 endfunction
 
