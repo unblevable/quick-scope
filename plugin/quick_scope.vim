@@ -34,6 +34,11 @@ if !exists('g:qs_enable')
   let g:qs_enable = 1
 endif
 
+if !exists('g:qs_max_chars')
+  " Disable on long lines for performance
+  let g:qs_max_chars = 1000
+endif
+
 " Change this to an option for a future update...
 if !exists('s:accepted_chars')
   " Keys correspond to characters that can be highlighted. Values aren't used.
@@ -304,7 +309,7 @@ function! s:highlight_line(direction, targets)
     let len = strlen(line)
     let pos = col('.')
 
-    if !empty(line)
+    if !empty(line) && len <= g:qs_max_chars
       " Highlight after the cursor.
       if a:direction != 0
         let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, len, a:targets)
