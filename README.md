@@ -77,11 +77,17 @@ let g:qs_highlight_on_keys = ['f', 'F']
 ```vim
 " Your .vimrc
 
-let g:qs_first_occurrence_highlight_color = '#afff5f' " gui vim
-let g:qs_first_occurrence_highlight_color = 155       " terminal vim
-
-let g:qs_second_occurrence_highlight_color = '#5fffff'  " gui vim
-let g:qs_second_occurrence_highlight_color = 81         " terminal vim
+if has("gui_running")  || has('termguicolors') || has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR " gui vim or vim enable TrueColor
+    let g:qs_first_occurrence_highlight_color = '#ffffff'
+    let g:qs_first_occurrence_highlight_bgcolor = '#CD0000'
+    let g:qs_second_occurrence_highlight_color = '#ffffff'
+    let g:qs_second_occurrence_highlight_bgcolor = '#447e27'
+else " terminal vim
+    let g:qs_first_occurrence_highlight_color = 15
+    let g:qs_first_occurrence_highlight_bgcolor = 28
+    let g:qs_first_occurrence_highlight_color = 15
+    let g:qs_second_occurrence_highlight_bgcolor = 205
+endif
 ```
 
 ### Toggle highlighting
