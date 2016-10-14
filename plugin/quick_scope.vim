@@ -73,7 +73,7 @@ vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 " Colors ---------------------------------------------------------------------
 " Detect if the running instance of Vim acts as a GUI or terminal.
 function! s:get_term()
-  if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR)
+  if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR) || has('termguicolors')
     let term = 'gui'
   else
     let term ='cterm'
@@ -148,11 +148,22 @@ function! s:set_highlight_colors()
 
   " Preserve the background color of cursorline if it exists.
   if &cursorline
-    let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
+    if !exists('g:qs_first_occurrence_highlight_bgcolor')
+        let bg_color_first = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
+    else
+        let bg_color_first = g:qs_first_occurrence_highlight_bgcolor
+    endif
+    if !exists('g:qs_second_occurrence_highlight_bgcolor')
+        let bg_color_second = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
+    else
+        let bg_color_second = g:qs_second_occurrence_highlight_bgcolor
+    endif
 
-    if bg_color != -1
-      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
-      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
+    if bg_color_first != -1
+      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color_first)
+    endif
+    if bg_color_first != -1
+      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color_second)
     endif
   endif
 endfunction
