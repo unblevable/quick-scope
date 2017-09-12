@@ -83,11 +83,11 @@ function! s:set_highlight_colors()
 
   " Highlight group marking first appearance of characters in a line.
   let s:hi_group_primary = 'QuickScopePrimary'
-  execute "highlight default " . s:hi_group_primary . "guifg='#afff5f' gui=underline ctermfg=155 cterm=underline"
+  execute "highlight default link " . s:hi_group_primary . " Function"
 
   " Highlight group marking second appearance of characters in a line.
   let s:hi_group_secondary = 'QuickScopeSecondary'
-  execute "highlight default " . s:hi_group_secondary . " guifg='#5fffff' gui=underline ctermfg=81 cterm=underline"
+  execute "highlight default link " . s:hi_group_secondary . " Define"
 
   " Highlight group marking dummy cursor when quick-scope is enabled on key
   " press.
