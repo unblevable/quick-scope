@@ -267,9 +267,24 @@ function! s:unhighlight_line()
   endfor
 endfunction
 
+" Save the value of s:hi_group_secondary to preserve customization before
+" changing it as a result of a double_tap
+function! s:save_secondary_highlight()
+  redir => s:saved_secondary_highlight
+  execute "highlight " . s:hi_group_secondary
+  redir END
+  let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^.*xxx ', '', '')
+endfunction
+
+" Reset s:hi_group_secondary to its saved value after it was changed as a result
+" of a double_tap
 function! s:reset_saved_secondary_highlight()
-  echom s:saved_secondary_highlight
-  " TODO:
+  if s:saved_secondary_highlight =~ '^links to '
+    let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^links to ', '', '')
+    execute "highlight link " . s:hi_group_secondary . " " . s:saved_secondary_highlight
+  else
+    execute "highlight " . s:hi_group_secondary . " " . s:saved_secondary_highlight
+  endif
 endfunction
 
 " Highlight on key press -----------------------------------------------------
@@ -394,7 +409,7 @@ function! s:double_tap()
 
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
-    let s:saved_secondary_highlight = execute "highlight " . s:hi_group_secondary
+    call s:save_secondary_highlight()
     execute "highlight link " . s:hi_group_secondary . " " . s:hi_group_secondary
 
     " Set a temporary event to keep track of when to reset the extra
