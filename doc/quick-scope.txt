@@ -99,29 +99,19 @@ Trigger a highlight only when pressing |f| and |F|.
  4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
 ------------------------------------------------------------------------------
 
-                                       *g:qs_first_occurrence_highlight_color*
                                                                *primary-color*
-Set the (primary) color for the first occurrence of a character.
+To set the (primary) color for the first occurrence of a character simply
+define the highlight group `QuickScopePrimary`.
 
-GUI Vim~
 >
-  let g:qs_first_occurrence_highlight_color = '#afff5f'
+  highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
 <
-Terminal Vim~
->
-  let g:qs_first_occurrence_highlight_color = 155
-<
-                                      *g:qs_second_occurrence_highlight_color*
                                                              *secondary-color*
-Set the (secondary) color for the second occurrence of a character.
+To set the (secondary) color for the second occurrence of a character simply
+define the highlight group `QuickScopeSecondary`.
 
-GUI Vim~
 >
-  let g:qs_second_occurrence_highlight_color = '#5fffff'
-<
-Terminal Vim~
->
-  let g:qs_second_occurrence_highlight_color = 81
+  highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
 <
  4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------

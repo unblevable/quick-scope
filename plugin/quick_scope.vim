@@ -71,43 +71,6 @@ nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
 vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
 " Colors ---------------------------------------------------------------------
-" Detect if the running instance of Vim acts as a GUI or terminal.
-function! s:get_term()
-  if has('gui_running') || has('termguicolors') && &termguicolors
-    let term = 'gui'
-  else
-    let term ='cterm'
-  endif
-
-  return term
-endfunction
-
-" Called when no color configurations are set. Choose default colors for
-" highlighting.
-function! s:set_default_color(group, co_gui, co_256, co_16)
-  let term = s:get_term()
-
-  " Pick a color from an existing highlight group if the highlight group
-  " exists.
-  if hlexists(a:group)
-    let color = synIDattr(synIDtrans(hlID(a:group)), 'fg', term)
-  endif
-
-  if !exists('color')
-    if term ==# 'gui'
-      let color = a:co_gui
-    else
-      if &t_Co > 255
-        let color = a:co_256
-      else
-        let color = a:co_16
-      endif
-    endif
-  endif
-
-  return color
-endfunction
-
 " Set or append to a custom highlight group.
 function! s:add_to_highlight_group(group, attr, color)
   execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
@@ -120,41 +83,16 @@ function! s:set_highlight_colors()
 
   " Highlight group marking first appearance of characters in a line.
   let s:hi_group_primary = 'QuickScopePrimary'
+  execute "highlight default " . s:hi_group_primary . "guifg='#afff5f' gui=underline ctermfg=155 cterm=underline"
+
+  " Highlight group marking second appearance of characters in a line.
   let s:hi_group_secondary = 'QuickScopeSecondary'
+  execute "highlight default " . s:hi_group_secondary . " guifg='#5fffff' gui=underline ctermfg=81 cterm=underline"
 
   " Highlight group marking dummy cursor when quick-scope is enabled on key
   " press.
   let s:hi_group_cursor = 'QuickScopeCursor'
-
-  if !exists('g:qs_first_occurrence_highlight_color')
-    " set color to match 'Function' highlight group or lime green
-    let s:primary_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
-  else
-    let s:primary_highlight_color = g:qs_first_occurrence_highlight_color
-  endif
-
-  if !exists('g:qs_second_occurrence_highlight_color')
-    " set color to match 'Keyword' highlight group or cyan
-    let s:secondary_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
-  else
-    let s:secondary_highlight_color = g:qs_second_occurrence_highlight_color
-  endif
-
-  call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_primary, 'fg', s:primary_highlight_color)
-  call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
-  execute printf("highlight link %s Cursor", s:hi_group_cursor)
-
-  " Preserve the background color of cursorline if it exists.
-  if &cursorline
-    let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
-
-    if bg_color != -1
-      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
-      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
-    endif
-  endif
+  execute "highlight default link " . s:hi_group_cursor . " Cursor"
 endfunction
 
 call s:set_highlight_colors()
