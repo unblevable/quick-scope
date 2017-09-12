@@ -420,7 +420,7 @@ function! s:double_tap()
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
     call s:save_secondary_highlight()
-    execute "highlight link " . s:hi_group_secondary . " " . s:hi_group_primary
+    execute "highlight! link " . s:hi_group_secondary . " " . s:hi_group_primary
 
     " Set a temporary event to keep track of when to reset the extra
     " highlight.
