@@ -267,6 +267,11 @@ function! s:unhighlight_line()
   endfor
 endfunction
 
+function! s:reset_saved_secondary_highlight()
+  echom s:saved_secondary_highlight
+  " TODO:
+endfunction
+
 " Highlight on key press -----------------------------------------------------
 " Manage state for keeping or removing the extra highlight after triggering a
 " highlight on key press.
@@ -285,7 +290,7 @@ function! s:handle_extra_highlight(state)
   " active (or the state is 2), reset the extra highlight.
   if exists('s:cursor_moved_count') && (a:state == 2 ||  s:cursor_moved_count > 1)
     call s:unhighlight_line()
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
+    call s:reset_saved_secondary_highlight()
     autocmd! quick_scope CursorMoved
   endif
 endfunction
@@ -389,7 +394,8 @@ function! s:double_tap()
 
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:primary_highlight_color)
+    let s:saved_secondary_highlight = execute "highlight " . s:hi_group_secondary
+    execute "highlight link " . s:hi_group_secondary . " " . s:hi_group_secondary
 
     " Set a temporary event to keep track of when to reset the extra
     " highlight.
