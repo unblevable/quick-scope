@@ -273,6 +273,7 @@ function! s:save_secondary_highlight()
   redir => s:saved_secondary_highlight
   execute "highlight " . s:hi_group_secondary
   redir END
+  redraw
   let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^.*xxx ', '', '')
 endfunction
 
