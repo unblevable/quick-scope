@@ -1,5 +1,5 @@
 " Initialize -----------------------------------------------------------------
-let s:plugin_name = "quick-scope"
+let s:plugin_name = 'quick-scope'
 
 if exists('g:loaded_quick_scope')
   finish
@@ -13,7 +13,7 @@ if &compatible
 endif
 
 if v:version < 701 || (v:version == 701 && !has('patch040'))
-  echoerr s:plugin_name . " requires Vim running in version 7.1.040 or later."
+  echoerr s:plugin_name . ' requires Vim running in version 7.1.040 or later.'
   finish
 endif
 
@@ -71,11 +71,6 @@ nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
 vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
 " Colors ---------------------------------------------------------------------
-" Set or append to a custom highlight group.
-function! s:add_to_highlight_group(group, attr, color)
-  execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
-endfunction
-
 " Set the colors used for highlighting.
 function! s:set_highlight_colors()
   " Priority for overruling other highlight matches.
@@ -83,16 +78,16 @@ function! s:set_highlight_colors()
 
   " Highlight group marking first appearance of characters in a line.
   let s:hi_group_primary = 'QuickScopePrimary'
-  execute "highlight default link " . s:hi_group_primary . " Function"
+  execute 'highlight default link ' . s:hi_group_primary . ' Function'
 
   " Highlight group marking second appearance of characters in a line.
   let s:hi_group_secondary = 'QuickScopeSecondary'
-  execute "highlight default link " . s:hi_group_secondary . " Define"
+  execute 'highlight default link ' . s:hi_group_secondary . ' Define'
 
   " Highlight group marking dummy cursor when quick-scope is enabled on key
   " press.
   let s:hi_group_cursor = 'QuickScopeCursor'
-  execute "highlight default link " . s:hi_group_cursor . " Cursor"
+  execute 'highlight default link ' . s:hi_group_cursor . ' Cursor'
 endfunction
 
 call s:set_highlight_colors()
@@ -135,9 +130,9 @@ function! s:add_to_highlight_patterns(patterns, highlights)
   " If there is a primary highlight for the last word, add it to the primary
   " highlight pattern.
   if hi_p > 0
-    let patt_p = printf("%s|%%%sc", patt_p, hi_p)
+    let patt_p = printf('%s|%%%sc', patt_p, hi_p)
   elseif hi_s > 0
-    let patt_s = printf("%s|%%%sc", patt_s, hi_s)
+    let patt_s = printf('%s|%%%sc', patt_s, hi_s)
   endif
 
   return [patt_p, patt_s]
@@ -178,7 +173,7 @@ function! s:get_highlight_patterns(line, start, end, targets)
     " as the start of a new word.
     "
     " Check for a <space> as a first condition for optimization.
-    if char == "\<space>" || !has_key(a:targets, char) || empty(char)
+    if char ==? "\<space>" || !has_key(a:targets, char) || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
@@ -276,11 +271,11 @@ function! s:save_secondary_highlight()
   endif
 
   redir => s:saved_secondary_highlight
-  execute "silent highlight " . s:hi_group_secondary
+  execute 'silent highlight ' . s:hi_group_secondary
   redir END
 
   if exists('s:saved_verbose')
-    execute "set verbose=" . s:saved_verbose
+    execute 'set verbose=' . s:saved_verbose
   endif
 
   let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^.*xxx ', '', '')
@@ -289,11 +284,11 @@ endfunction
 " Reset s:hi_group_secondary to its saved value after it was changed as a result
 " of a double_tap
 function! s:reset_saved_secondary_highlight()
-  if s:saved_secondary_highlight =~ '^links to '
+  if s:saved_secondary_highlight =~# '^links to '
     let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^links to ', '', '')
-    execute "highlight link " . s:hi_group_secondary . " " . s:saved_secondary_highlight
+    execute 'highlight! link ' . s:hi_group_secondary . ' ' . s:saved_secondary_highlight
   else
-    execute "highlight " . s:hi_group_secondary . " " . s:saved_secondary_highlight
+    execute 'highlight ' . s:hi_group_secondary . ' ' . s:saved_secondary_highlight
   endif
 endfunction
 
@@ -420,7 +415,7 @@ function! s:double_tap()
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
     call s:save_secondary_highlight()
-    execute "highlight! link " . s:hi_group_secondary . " " . s:hi_group_primary
+    execute 'highlight! link ' . s:hi_group_secondary . ' ' . s:hi_group_primary
 
     " Set a temporary event to keep track of when to reset the extra
     " highlight.
