@@ -49,7 +49,7 @@ if !exists('g:qs_highlight_on_keys')
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
-    execute printf('noremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
+    execute printf('nnoremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
   endfor
 endif
 
@@ -68,7 +68,7 @@ command! -nargs=0 QuickScopeToggle call s:toggle()
 
 " Plug mappings --------------------------------------------------------------
 nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
-vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
+xnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
 " Colors ---------------------------------------------------------------------
 " Set the colors used for highlighting.
