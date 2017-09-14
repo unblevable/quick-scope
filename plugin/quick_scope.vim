@@ -1,5 +1,5 @@
 " Initialize -----------------------------------------------------------------
-let s:plugin_name = "quick-scope"
+let s:plugin_name = 'quick-scope'
 
 if exists('g:loaded_quick_scope')
   finish
@@ -13,7 +13,7 @@ if &compatible
 endif
 
 if v:version < 701 || (v:version == 701 && !has('patch040'))
-  echoerr s:plugin_name . " requires Vim running in version 7.1.040 or later."
+  echoerr s:plugin_name . ' requires Vim running in version 7.1.040 or later.'
   finish
 endif
 
@@ -71,48 +71,6 @@ nnoremap <silent> <plug>(QuickScopeToggle) :call <sid>toggle()<cr>
 vnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call <sid>toggle()<cr>
 
 " Colors ---------------------------------------------------------------------
-" Detect if the running instance of Vim acts as a GUI or terminal.
-function! s:get_term()
-  if has('gui_running') || (has('nvim') && $NVIM_TUI_ENABLE_TRUE_COLOR)
-    let term = 'gui'
-  else
-    let term ='cterm'
-  endif
-
-  return term
-endfunction
-
-" Called when no color configurations are set. Choose default colors for
-" highlighting.
-function! s:set_default_color(group, co_gui, co_256, co_16)
-  let term = s:get_term()
-
-  " Pick a color from an existing highlight group if the highlight group
-  " exists.
-  if hlexists(a:group)
-    let color = synIDattr(synIDtrans(hlID(a:group)), 'fg', term)
-  endif
-
-  if !exists('color')
-    if term ==# 'gui'
-      let color = a:co_gui
-    else
-      if &t_Co > 255
-        let color = a:co_256
-      else
-        let color = a:co_16
-      endif
-    endif
-  endif
-
-  return color
-endfunction
-
-" Set or append to a custom highlight group.
-function! s:add_to_highlight_group(group, attr, color)
-  execute printf("highlight %s %s%s=%s", a:group, s:get_term(), a:attr, a:color)
-endfunction
-
 " Set the colors used for highlighting.
 function! s:set_highlight_colors()
   " Priority for overruling other highlight matches.
@@ -120,41 +78,16 @@ function! s:set_highlight_colors()
 
   " Highlight group marking first appearance of characters in a line.
   let s:hi_group_primary = 'QuickScopePrimary'
+  execute 'highlight default link ' . s:hi_group_primary . ' Function'
+
+  " Highlight group marking second appearance of characters in a line.
   let s:hi_group_secondary = 'QuickScopeSecondary'
+  execute 'highlight default link ' . s:hi_group_secondary . ' Define'
 
   " Highlight group marking dummy cursor when quick-scope is enabled on key
   " press.
   let s:hi_group_cursor = 'QuickScopeCursor'
-
-  if !exists('g:qs_first_occurrence_highlight_color')
-    " set color to match 'Function' highlight group or lime green
-    let s:primary_highlight_color = s:set_default_color('Function', '#afff5f', 155, 10)
-  else
-    let s:primary_highlight_color = g:qs_first_occurrence_highlight_color
-  endif
-
-  if !exists('g:qs_second_occurrence_highlight_color')
-    " set color to match 'Keyword' highlight group or cyan
-    let s:secondary_highlight_color = s:set_default_color('Define', '#5fffff', 81, 14)
-  else
-    let s:secondary_highlight_color = g:qs_second_occurrence_highlight_color
-  endif
-
-  call s:add_to_highlight_group(s:hi_group_primary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_primary, 'fg', s:primary_highlight_color)
-  call s:add_to_highlight_group(s:hi_group_secondary, '', 'underline')
-  call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
-  execute printf("highlight link %s Cursor", s:hi_group_cursor)
-
-  " Preserve the background color of cursorline if it exists.
-  if &cursorline
-    let bg_color = synIDattr(synIDtrans(hlID('CursorLine')), 'bg', s:get_term())
-
-    if bg_color != -1
-      call s:add_to_highlight_group(s:hi_group_primary, 'bg', bg_color)
-      call s:add_to_highlight_group(s:hi_group_secondary, 'bg', bg_color)
-    endif
-  endif
+  execute 'highlight default link ' . s:hi_group_cursor . ' Cursor'
 endfunction
 
 call s:set_highlight_colors()
@@ -197,9 +130,9 @@ function! s:add_to_highlight_patterns(patterns, highlights)
   " If there is a primary highlight for the last word, add it to the primary
   " highlight pattern.
   if hi_p > 0
-    let patt_p = printf("%s|%%%sc", patt_p, hi_p)
+    let patt_p = printf('%s|%%%sc', patt_p, hi_p)
   elseif hi_s > 0
-    let patt_s = printf("%s|%%%sc", patt_s, hi_s)
+    let patt_s = printf('%s|%%%sc', patt_s, hi_s)
   endif
 
   return [patt_p, patt_s]
@@ -240,7 +173,7 @@ function! s:get_highlight_patterns(line, start, end, targets)
     " as the start of a new word.
     "
     " Check for a <space> as a first condition for optimization.
-    if char == "\<space>" || !has_key(a:targets, char) || empty(char)
+    if char ==? "\<space>" || !has_key(a:targets, char) || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
@@ -329,6 +262,36 @@ function! s:unhighlight_line()
   endfor
 endfunction
 
+" Save the value of s:hi_group_secondary to preserve customization before
+" changing it as a result of a double_tap
+function! s:save_secondary_highlight()
+  if &verbose
+    let s:saved_verbose = &verbose
+    set verbose=0
+  endif
+
+  redir => s:saved_secondary_highlight
+  execute 'silent highlight ' . s:hi_group_secondary
+  redir END
+
+  if exists('s:saved_verbose')
+    execute 'set verbose=' . s:saved_verbose
+  endif
+
+  let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^.*xxx ', '', '')
+endfunction
+
+" Reset s:hi_group_secondary to its saved value after it was changed as a result
+" of a double_tap
+function! s:reset_saved_secondary_highlight()
+  if s:saved_secondary_highlight =~# '^links to '
+    let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^links to ', '', '')
+    execute 'highlight! link ' . s:hi_group_secondary . ' ' . s:saved_secondary_highlight
+  else
+    execute 'highlight ' . s:hi_group_secondary . ' ' . s:saved_secondary_highlight
+  endif
+endfunction
+
 " Highlight on key press -----------------------------------------------------
 " Manage state for keeping or removing the extra highlight after triggering a
 " highlight on key press.
@@ -347,7 +310,7 @@ function! s:handle_extra_highlight(state)
   " active (or the state is 2), reset the extra highlight.
   if exists('s:cursor_moved_count') && (a:state == 2 ||  s:cursor_moved_count > 1)
     call s:unhighlight_line()
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:secondary_highlight_color)
+    call s:reset_saved_secondary_highlight()
     autocmd! quick_scope CursorMoved
   endif
 endfunction
@@ -451,7 +414,8 @@ function! s:double_tap()
 
     " Temporarily change the second occurrence highlight color to a primary
     " highlight color.
-    call s:add_to_highlight_group(s:hi_group_secondary, 'fg', s:primary_highlight_color)
+    call s:save_secondary_highlight()
+    execute 'highlight! link ' . s:hi_group_secondary . ' ' . s:hi_group_primary
 
     " Set a temporary event to keep track of when to reset the extra
     " highlight.
