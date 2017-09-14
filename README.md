@@ -95,9 +95,9 @@ Or create a custom mapping for the toggle.
 " Your .vimrc
 
 " Map the leader key + q to toggle quick-scope's highlighting in normal/visual mode.
-" Note that you must use nmap/vmap instead of their non-recursive versions (nnoremap/vnoremap).
+" Note that you must use nmap/xmap instead of their non-recursive versions (nnoremap/xnoremap).
 nmap <leader>q <plug>(QuickScopeToggle)
-vmap <leader>q <plug>(QuickScopeToggle)
+xmap <leader>q <plug>(QuickScopeToggle)
 ```
 
 ## Moving Across a Line

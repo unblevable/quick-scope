@@ -133,9 +133,9 @@ Turn highlight on or off with a user command:
 Create a custom mapping (<leader> + q in the example below):
 >
   nmap <leader>q <plug>(QuickScopeToggle)
-  vmap <leader>q <plug>(QuickScopeToggle)
+  xmap <leader>q <plug>(QuickScopeToggle)
 <
-Notice that you must use 'nmap'/'vmap' instead of 'nnoremap'/'vnoremap'.
+Notice that you must use 'nmap'/'xmap' instead of 'nnoremap'/'xnoremap'.
 
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
