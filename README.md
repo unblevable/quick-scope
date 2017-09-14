@@ -23,7 +23,7 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
 When moving across a line, the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd>T</kbd> motions combined with <kbd>;</kbd> and <kbd>,</kbd> should be your go-to options for [many reasons](#advantages). Quick-scope fixes their only drawback: it is difficult to consistently choose the right characters to target.
 
 ### Features
-+ Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, everytime your cursor moves.
++ Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, every time your cursor moves.
 
   ![screencast0](https://cloud.githubusercontent.com/assets/723755/8228892/5cf6798e-1580-11e5-8ed4-379d676e7dba.gif)
 
@@ -74,14 +74,15 @@ let g:qs_highlight_on_keys = ['f', 'F']
 ```
 
 ### Customize colors
+Quick-scope directly makes use of highlight groups called `QuickScopePrimary` and `QuickScopeSecondary`. You can customize them using the `:highlight` command. It is recommended to put them in an `autocmd` so that they are updated when the colorscheme changes.
 ```vim
 " Your .vimrc
 
-let g:qs_first_occurrence_highlight_color = '#afff5f' " gui vim
-let g:qs_first_occurrence_highlight_color = 155       " terminal vim
-
-let g:qs_second_occurrence_highlight_color = '#5fffff'  " gui vim
-let g:qs_second_occurrence_highlight_color = 81         " terminal vim
+augroup qs_colors
+  autocmd!
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+  autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+augroup END
 ```
 
 ### Toggle highlighting
@@ -100,7 +101,7 @@ vmap <leader>q <plug>(QuickScopeToggle)
 ```
 
 ## Moving Across a Line
-This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their tradeoffs, you can better understand the benefits of this plugin.
+This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their trade-offs, you can better understand the benefits of this plugin.
 
 ### Character motions
 
@@ -197,7 +198,7 @@ Is any of this getting through to you?
 
   The search keys. They are overkill for moving across a line.
   + Much of their behavior overlaps with that of the superior character motions.
-  + <kbd>/</kbd> + `pattern` + <kbd>Return</kbd> amounts to a wildly inefficent number of keystrokes.
+  + <kbd>/</kbd> + `pattern` + <kbd>Return</kbd> amounts to a wildly inefficient number of keystrokes.
   + Searches pollute your buffer with lingering highlights.
 
 + <kbd>(</kbd>, <kbd>)</kbd>

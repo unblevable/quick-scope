@@ -113,6 +113,13 @@ define the highlight group `QuickScopeSecondary`.
 >
   highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
 <
+
+It is recommended to put these in an |autocmd| so that they are updated when
+the colorscheme updates.
+
+>
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+<
  4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------
 
