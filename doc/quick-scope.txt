@@ -1,9 +1,10 @@
 *quick-scope.txt*
 
-Version:    1.1.1
-Homepage:   https://github.com/unblevable/quick-scope
-Author:     Brian Le (unblevable)
-License:    MIT
+Version:            2.0.0
+Homepage:           https://github.com/bradford-smith94/quick-scope
+Original Author:    Brian Le (unblevable)
+Author:             Bradford Smith https://github.com/bradford-smith94
+License:            MIT
 
  0. CONTENTS                                                     *qs-contents*
 ==============================================================================
@@ -40,7 +41,7 @@ three keystrokes with built-in Vim commands.
 If you're viewing this file in Vim and have quick-scope installed, you should
 already have good idea of what it does.
 
-Otherwise, see https://github.com/unblevable/quick-scope#Features for
+Otherwise, see https://github.com/bradford-smith94/quick-scope#Features for
 screencaps of this plugin in action.
 
  2.1 EXAMPLE                                                      *qs-example*
@@ -141,7 +142,7 @@ Notice that you must use 'nmap'/'vmap' instead of 'nnoremap'/'vnoremap'.
 
 In the link below is a detailed look at the most common and useful options for
 moving your cursor across a line in Vim:
-https://github.com/unblevable/quick-scope#moving-across-a-line
+https://github.com/bradford-smith94/quick-scope#moving-across-a-line
 
 When you are aware of the existing tools available to you and their tradeoffs,
 you can better understand the benefits of this plugin.
@@ -150,7 +151,7 @@ you can better understand the benefits of this plugin.
 ==============================================================================
 
 Post any bug or feature request here:
-http://github.com/unblevable/quick-scope/issues
+http://github.com/bradford-smith94/quick-scope/issues
 
  6.1 KNOWN BUGS                                                *qs-known-bugs*
 ------------------------------------------------------------------------------
@@ -168,6 +169,10 @@ http://github.com/unblevable/quick-scope/issues
 ==============================================================================
 
  Version   Date         Release Notes~
+|---------|-----------|-----------------------------------------------------------|
+ 2.0.0     2017-09-14 * Changed
+                        - Re-wrote how highlighting works, see
+                          |qs-customize-colors| for how the new system works
 |---------|-----------|-----------------------------------------------------------|
  1.1.1     2015-09-30 * Fixed
                         - Works after sourcing `.vimrc`
