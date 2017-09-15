@@ -1,6 +1,6 @@
 *quick-scope.txt*
 
-Version:            2.0.1
+Version:            2.1.0
 Homepage:           https://github.com/bradford-smith94/quick-scope
 Original Author:    Brian Le (unblevable)
 Author:             Bradford Smith https://github.com/bradford-smith94
@@ -17,6 +17,7 @@ License:            MIT
     4.1 Highlight on key press ................ |qs-highlight-on-key-press|
     4.2 Customize colors ...................... |qs-customize-colors|
     4.3 Toggle highlighting ................... |qs-toggle-highlighting|
+    4.4 Disable on lone lings.................. |qs-disable-on-longlines|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -53,8 +54,9 @@ Place your cursor at the beginning the line below:
 
 You should see at least one highlighted character in all but one 'word'.
 
-A character is highlighted with a |primary-color|/|secondary-color| if it is
-the first/second occurrence of that character from your cursor on a line.
+A character is highlighted with a |qs-primary-color|/|qs- secondary-color| if
+it is the first/second occurrence of that character from your cursor on a
+line.
 
 Use |f|<char> or |F|<char> to jump directly to any character with a primary
 highlight forward or backward.
@@ -100,14 +102,14 @@ Trigger a highlight only when pressing |f| and |F|.
  4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
 ------------------------------------------------------------------------------
 
-                                                               *primary-color*
+                                                            *qs-primary-color*
 To set the (primary) color for the first occurrence of a character simply
 define the highlight group `QuickScopePrimary`.
 
 >
   highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
 <
-                                                             *secondary-color*
+                                                          *qs-secondary-color*
 To set the (secondary) color for the second occurrence of a character simply
 define the highlight group `QuickScopeSecondary`.
 
@@ -136,6 +138,16 @@ Create a custom mapping (<leader> + q in the example below):
   xmap <leader>q <plug>(QuickScopeToggle)
 <
 Notice that you must use 'nmap'/'xmap' instead of 'nnoremap'/'xnoremap'.
+
+ 4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
+------------------------------------------------------------------------------
+
+                                                              *g:qs_max_chars*
+Turn off this plugin when the length of a line is longer than
+`g:qs_max_chars`. (default: `1000`)
+>
+  let g:qs_max_chars=80
+<
 
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
@@ -170,6 +182,8 @@ http://github.com/bradford-smith94/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.1.0     2017-09-15 * Added
+                        - Added |g:qs_max_chars| option
  2.0.1     2017-09-14 * Fixed
                         - No longer clobbers |Select-mode|
  2.0.0     2017-09-14 * Changed

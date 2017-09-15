@@ -100,6 +100,12 @@ nmap <leader>q <plug>(QuickScopeToggle)
 xmap <leader>q <plug>(QuickScopeToggle)
 ```
 
+### Disable plugin on long lines
+Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (default: 1000) 
+```vim
+let g:qs_max_chars=80
+```
+
 ## Moving Across a Line
 This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their trade-offs, you can better understand the benefits of this plugin.
 
