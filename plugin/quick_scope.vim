@@ -54,7 +54,9 @@ if !exists('g:qs_highlight_on_keys')
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
-    execute printf('nnoremap <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
+    for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+      execute printf(mapmode . ' <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
+    endfor
   endfor
 endif
 
