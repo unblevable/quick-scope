@@ -53,7 +53,7 @@ if !exists('g:qs_highlight_on_keys')
   augroup END
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
-  for motion in filter(g:qs_highlight_on_keys, 'v:val =~# "^[fFtT]$"')
+  for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
     for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
       execute printf(mapmode . ' <unique> <silent> <expr> %s <sid>ready() . <sid>aim("%s") . <sid>reload() . <sid>double_tap()', motion, motion)
     endfor
@@ -239,7 +239,7 @@ endfunction
 " The direction can be 0 (backward), 1 (forward) or 2 (both). Targets are the
 " characters that can be highlighted.
 function! s:highlight_line(direction, targets)
-  if g:qs_enable
+  if g:qs_enable && (!exists('b:qs_local_disable') || !b:qs_local_disable)
     let line = getline(line('.'))
     let len = strlen(line)
     let pos = col('.')

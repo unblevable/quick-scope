@@ -100,9 +100,23 @@ nmap <leader>q <plug>(QuickScopeToggle)
 xmap <leader>q <plug>(QuickScopeToggle)
 ```
 
-### Disable plugin on long lines
-Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (default: 1000) 
+Setting `g:qs_enable` equal to zero will start the plugin disabled. (default: 1)
 ```vim
+" Your .vimrc
+
+let g:qs_enable=0
+```
+
+Additionally, setting the buffer local variable `b:qs_local_disable` will have the same effect on a specific buffer.
+```vim
+let b:qs_local_disable=1
+```
+
+### Disable plugin on long lines
+Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (default: 1000)
+```vim
+" Your .vimrc
+
 let g:qs_max_chars=80
 ```
 

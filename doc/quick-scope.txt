@@ -1,6 +1,6 @@
 *quick-scope.txt*
 
-Version:            2.1.1
+Version:            2.2.0
 Homepage:           https://github.com/bradford-smith94/quick-scope
 Original Author:    Brian Le (unblevable)
 Author:             Bradford Smith https://github.com/bradford-smith94
@@ -62,7 +62,7 @@ Use |f|<char> or |F|<char> to jump directly to any character with a primary
 highlight forward or backward.
 
 The `h` in `the` should be the only character with a secondary highlight if
-your cursor is at the beginning of the example. Use |fh;| to quickly move to
+your cursor is at the beginning of the example. Use `fh;` to quickly move to
 it.
 
  3. FEATURES                                                     *qs-features*
@@ -139,6 +139,20 @@ Create a custom mapping (<leader> + q in the example below):
 <
 Notice that you must use 'nmap'/'xmap' instead of 'nnoremap'/'xnoremap'.
 
+                                                                 *g:qs_enable*
+Setting `g:qs_enable` equal to zero will start the plugin disabled.
+(default: `1`)
+>
+  let g:qs_enable=0
+<
+
+                                                          *b:qs_local_disable*
+Additionally, setting the buffer local variable `b:qs_local_disable` will have
+the same effect on a specific buffer.
+>
+  let b:qs_local_disable=1
+<
+
  4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
 ------------------------------------------------------------------------------
 
@@ -182,6 +196,8 @@ http://github.com/bradford-smith94/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.2.0     2017-09-19 * Added
+                        - Added |b:qs_local_disable| option
  2.1.1     2017-09-17 * Fixed
                         - Re-enable plugin in |visual-mode| and |operator-pending|
                           mode after fixing |select-mode|
