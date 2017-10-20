@@ -5,13 +5,14 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
 
 *Check out [character motions](#character-motions) to learn about what these keys do and their advantages. See [other motions](#other-motions) for alternative ways of moving across a line and their use-cases.*
 
-**TLDR**: This plugin should help you get to any word on a line in two or three keystrokes with mainly <kbd>f{char}</kbd> (which moves your cursor to <kbd>{char}</kbd>).
+**TLDR**: This plugin should help you get to any word on a line in two or three keystrokes with mainly <kbd>f&lt;char&gt;</kbd> (which moves your cursor to <kbd>&lt;char&gt;</kbd>).
 
 + [Overview](#overview)
   + [Features](#features)
   + [Benefits](#benefits)
 + [Installation](#installation)
 + [Options](#options)
+  + [Highlight on key press](#highlight-on-key-press)
   + [Customize colors](#customize-colors)
   + [Toggle highlighting](#toggle-highlighting)
 + [Moving Across a Line](#moving-across-a-line)
@@ -22,7 +23,7 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
 When moving across a line, the <kbd>f</kbd>, <kbd>F</kbd>, <kbd>t</kbd> and <kbd>T</kbd> motions combined with <kbd>;</kbd> and <kbd>,</kbd> should be your go-to options for [many reasons](#advantages). Quick-scope fixes their only drawback: it is difficult to consistently choose the right characters to target.
 
 ### Features
-+ Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, everytime your cursor moves.
++ Quick-scope highlights the first occurrences of characters to the left and right of your cursor (**green** in the screencast), once per word, every time your cursor moves.
 
   ![screencast0](https://cloud.githubusercontent.com/assets/723755/8228892/5cf6798e-1580-11e5-8ed4-379d676e7dba.gif)
 
@@ -52,24 +53,36 @@ Use your favorite plugin manager.
 ```vim
 " Your .vimrc
 
-Plug 'unblevable/quick-scope'       " Plug
-NeoBundle 'unblevable/quick-scope'  " xor NeoBundle
-Plugin 'unblevable/quick-scope'     " xor Vundle
+Plug 'bradford-smith94/quick-scope'       " Plug
+NeoBundle 'bradford-smith94/quick-scope'  " xor NeoBundle
+Plugin 'bradford-smith94/quick-scope'     " xor Vundle
 ```
 ```sh
-$ git clone https://github.com/unblevable/quick-scope ~/.vim/bundle/quick-scope # xor Pathogen
+$ git clone https://github.com/bradford-smith94/quick-scope ~/.vim/bundle/quick-scope # xor Pathogen
 ```
 
 ## Options
-### Customize colors
+### Highlight on key press
 ```vim
 " Your .vimrc
 
-let g:qs_first_occurrence_highlight_color = '#afff5f' " gui vim
-let g:qs_first_occurrence_highlight_color = 155       " terminal vim
+" Trigger a highlight in the appropriate direction when pressing these keys:
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
-let g:qs_second_occurrence_highlight_color = '#5fffff'  " gui vim
-let g:qs_second_occurrence_highlight_color = 81         " terminal vim
+" Trigger a highlight only when pressing f and F.
+let g:qs_highlight_on_keys = ['f', 'F']
+```
+
+### Customize colors
+Quick-scope directly makes use of highlight groups called `QuickScopePrimary` and `QuickScopeSecondary`. You can customize them using the `:highlight` command. It is recommended to put them in an `autocmd` so that they are updated when the colorscheme changes.
+```vim
+" Your .vimrc
+
+augroup qs_colors
+  autocmd!
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+  autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+augroup END
 ```
 
 ### Toggle highlighting
@@ -82,13 +95,33 @@ Or create a custom mapping for the toggle.
 " Your .vimrc
 
 " Map the leader key + q to toggle quick-scope's highlighting in normal/visual mode.
-" Note that you must use nmap/vmap instead of their non-recursive versions (nnoremap/vnoremap).
+" Note that you must use nmap/xmap instead of their non-recursive versions (nnoremap/xnoremap).
 nmap <leader>q <plug>(QuickScopeToggle)
-vmap <leader>q <plug>(QuickScopeToggle)
+xmap <leader>q <plug>(QuickScopeToggle)
+```
+
+Setting `g:qs_enable` equal to zero will start the plugin disabled. (default: 1)
+```vim
+" Your .vimrc
+
+let g:qs_enable=0
+```
+
+Additionally, setting the buffer local variable `b:qs_local_disable` will have the same effect on a specific buffer.
+```vim
+let b:qs_local_disable=1
+```
+
+### Disable plugin on long lines
+Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (default: 1000)
+```vim
+" Your .vimrc
+
+let g:qs_max_chars=80
 ```
 
 ## Moving Across a Line
-This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their tradeoffs, you can better understand the benefits of this plugin.
+This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their trade-offs, you can better understand the benefits of this plugin.
 
 ### Character motions
 
@@ -185,7 +218,7 @@ Is any of this getting through to you?
 
   The search keys. They are overkill for moving across a line.
   + Much of their behavior overlaps with that of the superior character motions.
-  + <kbd>/</kbd> + `pattern` + <kbd>Return</kbd> amounts to a wildly inefficent number of keystrokes.
+  + <kbd>/</kbd> + `pattern` + <kbd>Return</kbd> amounts to a wildly inefficient number of keystrokes.
   + Searches pollute your buffer with lingering highlights.
 
 + <kbd>(</kbd>, <kbd>)</kbd>

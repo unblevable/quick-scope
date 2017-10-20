@@ -1,26 +1,30 @@
-*quick-scope.txt*
+*quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
+*quick-scope*
 
-Version:    1.0.0
-Homepage:   https://github.com/unblevable/quick-scope
-Author:     Brian Le (unblevable)
-License:    MIT
+Version:            2.2.0
+Homepage:           https://github.com/bradford-smith94/quick-scope
+Original Author:    Brian Le (unblevable)
+Author:             Bradford Smith https://github.com/bradford-smith94
+License:            MIT
 
  0. CONTENTS                                                     *qs-contents*
 ==============================================================================
 
-  1. quick-scope .............................. |qs-quick-scope|
+  1. quick-scope Introduction ................. |qs-intro|
   2. Usage .................................... |qs-usage|
     2.1 Example ............................... |qs-example|
   3. Features ................................. |qs-features|
   4. Options .................................. |qs-options|
-    4.1 Customize colors ...................... |qs-customize-colors|
-    4.2 Toggle highlighting ................... |qs-toggle-highlighting|
+    4.1 Highlight on key press ................ |qs-highlight-on-key-press|
+    4.2 Customize colors ...................... |qs-customize-colors|
+    4.3 Toggle highlighting ................... |qs-toggle-highlighting|
+    4.4 Disable on lone lings.................. |qs-disable-on-longlines|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
   7. Changelog ................................ |qs-changelog|
 
- 1. QUICK-SCOPE                                               *qs-quick-scope*
+ 1. QUICK-SCOPE INTRODUCTION                                        *qs-intro*
 ==============================================================================
 
 This plugin highlights the optimal characters to target for the |f|, |F|, |t|
@@ -39,7 +43,7 @@ three keystrokes with built-in Vim commands.
 If you're viewing this file in Vim and have quick-scope installed, you should
 already have good idea of what it does.
 
-Otherwise, see https://github.com/unblevable/quick-scope#Features for
+Otherwise, see https://github.com/bradford-smith94/quick-scope#Features for
 screencaps of this plugin in action.
 
  2.1 EXAMPLE                                                      *qs-example*
@@ -49,17 +53,18 @@ Place your cursor at the beginning the line below:
 >
   It's just like the story of the grasshopper and the octopus.
 
-You should see at least one highlighted character in each 'word'.
+You should see at least one highlighted character in all but one 'word'.
 
-A character is highlighted with a |primary-color|/|secondary-color| if it is
-the first/second occurrence of that character from your cursor on a line.
+A character is highlighted with a |qs-primary-color|/|qs-secondary-color| if
+it is the first/second occurrence of that character from your cursor on a
+line.
 
-Use |f|/|F| + {char} to jump directly to any character with a primary
-highlight forward/backward.
+Use |f|<char> or |F|<char> to jump directly to any character with a primary
+highlight forward or backward.
 
 The `h` in `the` should be the only character with a secondary highlight if
-your cursor at the beginning of the example. Use |f| + h + |;| to quickly
-move to it.
+your cursor is at the beginning of the example. Use `fh;` to quickly move to
+it.
 
  3. FEATURES                                                     *qs-features*
 ==============================================================================
@@ -83,34 +88,43 @@ move to it.
  4. OPTIONS                                                       *qs-options*
 ==============================================================================
 
- 4.1 CUSTOMIZE COLORS                                    *qs-customize-colors*
+ 4.1 HIGHLIGHT ON KEY PRESS                        *qs-highlight-on-key-press*
 ------------------------------------------------------------------------------
 
-                                       *g:qs_first_occurrence_highlight_color*
-                                                               *primary-color*
-Set the (primary) color for the first occurrence of a character.
+                                                      *g:qs_highlight_on_keys*
+Trigger a highlight in the appropriate direction when pressing these keys:
+>
+  let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+<
+Trigger a highlight only when pressing |f| and |F|.
+>
+  let g:qs_highlight_on_keys = ['f', 'F']
+<
+ 4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
+------------------------------------------------------------------------------
 
-GUI Vim~
->
-  let g:qs_first_occurrence_highlight_color = '#afff5f'
-<
-Terminal Vim~
->
-  let g:qs_first_occurrence_highlight_color = 155
-<
-                                      *g:qs_second_occurrence_highlight_color*
-                                                             *secondary-color*
-Set the (secondary) color for the second occurrence of a character.
+                                                            *qs-primary-color*
+To set the (primary) color for the first occurrence of a character simply
+define the highlight group `QuickScopePrimary`.
 
-GUI Vim~
 >
-  let g:qs_second_occurrence_highlight_color = '#5fffff'
+  highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
 <
-Terminal Vim~
+                                                          *qs-secondary-color*
+To set the (secondary) color for the second occurrence of a character simply
+define the highlight group `QuickScopeSecondary`.
+
 >
-  let g:qs_second_occurrence_highlight_color = 81
+  highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
 <
- 4.2 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
+
+It is recommended to put these in an |autocmd| so that they are updated when
+the colorscheme updates.
+
+>
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+<
+ 4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------
 
                                                            *:QuickScopeToggle*
@@ -122,16 +136,40 @@ Turn highlight on or off with a user command:
 Create a custom mapping (<leader> + q in the example below):
 >
   nmap <leader>q <plug>(QuickScopeToggle)
-  vmap <leader>q <plug>(QuickScopeToggle)
+  xmap <leader>q <plug>(QuickScopeToggle)
 <
-Notice that you must use 'nmap'/'vmap' instead of 'nnoremap'/'vnoremap'.
+Notice that you must use 'nmap'/'xmap' instead of 'nnoremap'/'xnoremap'.
+
+                                                                 *g:qs_enable*
+Setting `g:qs_enable` equal to zero will start the plugin disabled.
+(default: `1`)
+>
+  let g:qs_enable=0
+<
+
+                                                          *b:qs_local_disable*
+Additionally, setting the buffer local variable `b:qs_local_disable` will have
+the same effect on a specific buffer.
+>
+  let b:qs_local_disable=1
+<
+
+ 4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
+------------------------------------------------------------------------------
+
+                                                              *g:qs_max_chars*
+Turn off this plugin when the length of a line is longer than
+`g:qs_max_chars`. (default: `1000`)
+>
+  let g:qs_max_chars=80
+<
 
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
 
 In the link below is a detailed look at the most common and useful options for
 moving your cursor across a line in Vim:
-https://github.com/unblevable/quick-scope#moving-across-a-line
+https://github.com/bradford-smith94/quick-scope#moving-across-a-line
 
 When you are aware of the existing tools available to you and their tradeoffs,
 you can better understand the benefits of this plugin.
@@ -140,7 +178,7 @@ you can better understand the benefits of this plugin.
 ==============================================================================
 
 Post any bug or feature request here:
-http://github.com/unblevable/quick-scope/issues
+http://github.com/bradford-smith94/quick-scope/issues
 
  6.1 KNOWN BUGS                                                *qs-known-bugs*
 ------------------------------------------------------------------------------
@@ -151,7 +189,7 @@ http://github.com/unblevable/quick-scope/issues
   the cursor moves.
 
   Let me know if this plugin slows down Vim to an unmanageable level. Using
-  |:QuickScopeToggle| make sure that it is acutally this plugin that is
+  |:QuickScopeToggle|, make sure that it is actually this plugin that is
   causing performance problems you are experiencing.
 
  7. CHANGELOG                                                   *qs-changelog*
@@ -159,15 +197,33 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.2.0     2017-09-19 * Added
+                        - Added |b:qs_local_disable| option
+ 2.1.1     2017-09-17 * Fixed
+                        - Re-enable plugin in |visual-mode| and |operator-pending|
+                          mode after fixing |select-mode|
+ 2.1.0     2017-09-15 * Added
+                        - Added |g:qs_max_chars| option
+ 2.0.1     2017-09-14 * Fixed
+                        - No longer clobbers |Select-mode|
+ 2.0.0     2017-09-14 * Changed
+                        - Re-wrote how highlighting works, see
+                          |qs-customize-colors| for how the new system works
+|---------|-----------|-----------------------------------------------------------|
+ 1.1.1     2015-09-30 * Fixed
+                        - Works after sourcing `.vimrc`
+                        - Works after changing 'colorscheme'
+ 1.1.0     2015-08-20 * Added
+                        - Added |g:qs_highlight_on_keys| option
  1.0.1     2015-08-02 * Changed
                         - Made the help doc link consistent with the plugin's
-                          name (quick-scope).
+                          name (quick-scope)
                         Fixed
                         - The highlight color selection on startup is more
                           robust.
-                        - Works with Neovim with true color enabled.
+                        - Works with Neovim with true color enabled
 |---------|-----------|-----------------------------------------------------------|
- 1.0.0     2015-08-02 * Initial upload.
+ 1.0.0     2015-08-02 * Initial upload
 
 ==============================================================================
 vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:
