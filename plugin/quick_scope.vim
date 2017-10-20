@@ -224,7 +224,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets)
       endif
 
       if !is_first_word
-        let occurrences = get(occurrences, char)
+        let char_occurrences = get(occurrences, char)
 
         " If the search is forward, we want to be greedy; otherwise, we
         " want to be reluctant. This prioritizes highlighting for
@@ -236,10 +236,10 @@ function! s:get_highlight_patterns(line, cursor, end, targets)
         " end of composing bytes so we adjust accordingly
         " eg. with a multibyte char of length 3, c will point to the
         " 3rd byte. Minus (len(char) - 1) to adjust to 1st byte
-        if occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
+        if char_occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
           let hi_p = c - (1 - direction) * (len(char) - 1)
           let char_p = char
-        elseif occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
+        elseif char_occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
           let hi_s = c - (1 - direction) * (len(char)- 1)
           let char_s = char
         endif
