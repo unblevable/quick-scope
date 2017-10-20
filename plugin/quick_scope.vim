@@ -181,21 +181,21 @@ function! s:get_highlight_patterns(line, cursor, end, targets)
   let i = 0
   let char = ''
   while c != a:cursor
-    let char = matchstr(a:line, ".", byteidx(a:line, i))
+    let char = matchstr(a:line, '.', byteidx(a:line, i))
     let c += len(char)
     let i += 1
   endwhile
 
   " reposition cursor to end of the char's composing bytes
   if !direction
-    let c += len(matchstr(a:line, ".", byteidx(a:line, i))) - 1
+    let c += len(matchstr(a:line, '.', byteidx(a:line, i))) - 1
   endif
 
   " catch cases where multibyte chars may result in c not exactly equal to
   " a:end
   while (direction && c <= a:end || !direction && c >= a:end)
 
-    let char = matchstr(a:line, ".", byteidx(a:line, i))
+    let char = matchstr(a:line, '.', byteidx(a:line, i))
 
     " Skips the first char as it is the char the cursor is at
     if is_first_char
@@ -224,13 +224,13 @@ function! s:get_highlight_patterns(line, cursor, end, targets)
       endif
 
       if !is_first_word
-        let occurrences = get(occurences, char)
+        let occurrences = get(occurrences, char)
 
         " If the search is forward, we want to be greedy; otherwise, we
         " want to be reluctant. This prioritizes highlighting for
         " characters at the beginning of a word.
         "
-        " If this is the first occurence of the letter in the word,
+        " If this is the first occurrence of the letter in the word,
         " mark it for a highlight.
         " If we are looking backwards, c will point to the end of the
         " end of composing bytes so we adjust accordingly
