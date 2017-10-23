@@ -120,6 +120,14 @@ Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (d
 let g:qs_max_chars=80
 ```
 
+### Accepted Characters
+The option `g:qs_accepted_chars` is a list of characters that quick-scope will highlight. (default: a list of `a-z, A-Z, 0-9`)
+```vim
+" Your .vimrc
+
+let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
+```
+
 ## Moving Across a Line
 This section provides a detailed look at the most common and useful options for moving your cursor across a line in Vim. When you are aware of the existing tools available to you and their trade-offs, you can better understand the benefits of this plugin.
 

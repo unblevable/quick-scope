@@ -19,6 +19,7 @@ License:            MIT
     4.2 Customize colors ...................... |qs-customize-colors|
     4.3 Toggle highlighting ................... |qs-toggle-highlighting|
     4.4 Disable on lone lings.................. |qs-disable-on-longlines|
+    4.5 Accepted Characters.................... |qs-accepted-chars|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -162,6 +163,16 @@ Turn off this plugin when the length of a line is longer than
 `g:qs_max_chars`. (default: `1000`)
 >
   let g:qs_max_chars=80
+<
+
+4.5 ACCEPTED CHARACTERS                                    *qs-accepted-chars*
+------------------------------------------------------------------------------
+
+                                                         *g:qs_accepted_chars*
+The option `g:qs_accepted_chars` is a list of characters that quick-scope will
+highlight. (default: a list of `a-z, A-Z, 0-9`)
+>
+  let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
 <
 
  5. MOTIVATION                                                 *qs-motivation*
