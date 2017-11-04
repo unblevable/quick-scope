@@ -15,6 +15,8 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
   + [Highlight on key press](#highlight-on-key-press)
   + [Customize colors](#customize-colors)
   + [Toggle highlighting](#toggle-highlighting)
+  + [Disable on long lines](#disable-plugin-on-long-lines)
+  + [Customize Accepted Characters](#accepted-characters)
 + [Moving Across a Line](#moving-across-a-line)
   + [Character motions](#character-motions)
   + [Other motions](#other-motions)
@@ -118,6 +120,14 @@ Turn off this plugin when the length of line is longer than `g:qs_max_chars`. (d
 " Your .vimrc
 
 let g:qs_max_chars=80
+```
+
+### Accepted Characters
+The option `g:qs_accepted_chars` is a list of characters that quick-scope will highlight. (default: a list of `a-z, A-Z, 0-9`)
+```vim
+" Your .vimrc
+
+let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
 ```
 
 ## Moving Across a Line

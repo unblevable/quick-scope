@@ -39,16 +39,14 @@ if !exists('g:qs_max_chars')
   let g:qs_max_chars = 1000
 endif
 
-" Change this to an option for a future update...
-if !exists('s:accepted_chars')
-  " Keys correspond to characters that can be highlighted. Values aren't used.
-  let s:accepted_chars = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0, 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0, '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0,}
+if !exists('g:qs_accepted_chars')
+  let g:qs_accepted_chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 endif
 
 if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
   augroup quick_scope
-    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line(2, s:accepted_chars)
+    autocmd CursorMoved,InsertLeave,ColorScheme * call s:unhighlight_line() | call s:highlight_line(2, g:qs_accepted_chars)
     autocmd InsertEnter * call s:unhighlight_line()
   augroup END
 else
@@ -147,7 +145,7 @@ endfunction
 
 " Finds which characters to highlight and returns their column positions as a
 " pattern string.
-function! s:get_highlight_patterns(line, start, end, targets)
+function! s:get_highlight_patterns(line, cursor, end, targets)
   " Keeps track of the number of occurrences for each target
   let occurrences = {}
 
@@ -159,7 +157,10 @@ function! s:get_highlight_patterns(line, start, end, targets)
   " to highlight any characters in it.
   let is_first_word = 1
 
-  " The positions of the (next) characters that will be given a highlight. A
+  " We want to skip the first char as this is the char the cursor is at
+  let is_first_char = 1
+
+  " The position of a character in a word that will be given a highlight. A
   " value of 0 indicates there is no character to highlight.
   let [hi_p, hi_s] = [0, 0]
 
@@ -170,23 +171,42 @@ function! s:get_highlight_patterns(line, start, end, targets)
 
   " If 1, we're looping forwards from the cursor to the end of the line;
   " otherwise, we're looping from the cursor to the beginning of the line.
-  let direction = a:start < a:end ? 1 : 0
+  let direction = a:cursor < a:end ? 1 : 0
 
-  let i = a:start
-  while i != a:end
-    let char = a:line[i]
+  " find the character index i and the byte index c
+  " of the current cursor position
+  let c = 1
+  let i = 0
+  let char = ''
+  while c != a:cursor
+    let char = matchstr(a:line, '.', byteidx(a:line, i))
+    let c += len(char)
+    let i += 1
+  endwhile
+
+  " reposition cursor to end of the char's composing bytes
+  if !direction
+    let c += len(matchstr(a:line, '.', byteidx(a:line, i))) - 1
+  endif
+
+  " catch cases where multibyte chars may result in c not exactly equal to
+  " a:end
+  while (direction && c <= a:end || !direction && c >= a:end)
+
+    let char = matchstr(a:line, '.', byteidx(a:line, i))
+
+    " Skips the first char as it is the char the cursor is at
+    if is_first_char
+
+      let is_first_char = 0
 
     " Don't consider the character for highlighting, but mark the position
     " as the start of a new word.
     "
     " Check for a <space> as a first condition for optimization.
-    if char ==? "\<space>" || !has_key(a:targets, char) || empty(char)
+    elseif char ==? "\<space>" || index(a:targets, char) == -1 || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
-
-        if exists('g:qs_highlight_on_keys')
-          call s:save_chars_with_secondary_highlights([char_p, char_s])
-        endif
       endif
 
       " We've reached a new word, so reset any highlights.
@@ -202,28 +222,36 @@ function! s:get_highlight_patterns(line, start, end, targets)
       endif
 
       if !is_first_word
-        let n = get(occurrences, char)
+        let char_occurrences = get(occurrences, char)
 
-        " If the search is forward, we want to be greedy; otherwise, we want
-        " to be reluctant. This prioritizes highlighting for characters at the
-        " beginning of a word.
+        " If the search is forward, we want to be greedy; otherwise, we
+        " want to be reluctant. This prioritizes highlighting for
+        " characters at the beginning of a word.
         "
-        " If this is the first occurence of the letter in the word, mark it
-        " for a highlight.
-        if n == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
-          let hi_p = i + 1
+        " If this is the first occurrence of the letter in the word,
+        " mark it for a highlight.
+        " If we are looking backwards, c will point to the end of the
+        " end of composing bytes so we adjust accordingly
+        " eg. with a multibyte char of length 3, c will point to the
+        " 3rd byte. Minus (len(char) - 1) to adjust to 1st byte
+        if char_occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
+          let hi_p = c - (1 - direction) * (len(char) - 1)
           let char_p = char
-        elseif n == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
-          let hi_s = i + 1
+        elseif char_occurrences == 2 && ((direction == 1 && hi_s == 0) || direction == 0)
+          let hi_s = c - (1 - direction) * (len(char)- 1)
           let char_s = char
         endif
       endif
     endif
 
+    " update i to next character
+    " update c to next byteindex
     if direction == 1
       let i += 1
+      let c += strlen(char)
     else
       let i -= 1
+      let c -= strlen(char)
     endif
   endwhile
 
@@ -373,7 +401,7 @@ function! s:aim(motion)
   " This line also causes getchar() to cleanly cancel on a <c-c>.
   execute 'nnoremap <silent> <c-c> <c-c>'
 
-  call s:highlight_line(s:direction, s:accepted_chars)
+  call s:highlight_line(s:direction, g:qs_accepted_chars)
 
   redraw
 
