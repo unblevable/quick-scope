@@ -15,6 +15,8 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
   + [Highlight on key press](#highlight-on-key-press)
   + [Customize colors](#customize-colors)
   + [Toggle highlighting](#toggle-highlighting)
+  + [Disable on long lines](#disable-plugin-on-long-lines)
+  + [Customize Accepted Characters](#accepted-characters)
 + [Moving Across a Line](#moving-across-a-line)
   + [Character motions](#character-motions)
   + [Other motions](#other-motions)
