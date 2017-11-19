@@ -399,6 +399,10 @@ function! s:aim(motion)
   " character search.
   "
   " This line also causes getchar() to cleanly cancel on a <c-c>.
+  let b:qs_prev_ctrl_c_map = maparg('<c-c>', 'n', 0, 1)
+  if empty(b:qs_prev_ctrl_c_map)
+    unlet b:qs_prev_ctrl_c_map
+  endif
   execute 'nnoremap <silent> <c-c> <c-c>'
 
   call s:highlight_line(s:direction, g:qs_accepted_chars)
@@ -421,8 +425,13 @@ function! s:reload()
   let &t_ve = s:t_ve
   let &guicursor = s:guicursor
 
-  " Restore default <c-c> functionality
-  execute 'nunmap <c-c>'
+  " Restore previous or default <c-c> functionality
+  if exists('b:qs_prev_ctrl_c_map')
+    call quick_scope#RestoreMapping(b:qs_prev_ctrl_c_map)
+    unlet b:qs_prev_ctrl_c_map
+  else
+    execute 'nunmap <c-c>'
+  endif
 
   call s:unhighlight_line()
 
