@@ -281,9 +281,6 @@ function! s:highlight_line(direction, targets)
 
       " Highlight before the cursor.
       if a:direction != 1
-        let pos -= 2
-        if pos < 0 | let pos = 0 | endif
-
         let [patt_p, patt_s] = s:get_highlight_patterns(line, pos, -1, a:targets)
         call s:apply_highlight_patterns([patt_p, patt_s])
       endif
