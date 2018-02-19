@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.3.2
+Version:            2.3.3
 Homepage:           https://github.com/bradford-smith94/quick-scope
 Original Author:    Brian Le (unblevable)
 Author:             Bradford Smith https://github.com/bradford-smith94
@@ -208,6 +208,9 @@ http://github.com/bradford-smith94/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.3.3     2018-02-19 * Changed
+                        - Moved function definitions to autoload/ for small
+                          startuptime improvement
  2.3.2     2017-11-19 * Fixed
                         - Vanilla mode works again after the multibyte merge
                           (v2.3.0) caused Vim to freeze when highlighting
