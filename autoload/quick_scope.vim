@@ -269,9 +269,9 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
     " Don't consider the character for highlighting, but mark the position
     " as the start of a new word.
-    "
-    " Check for a <space> as a first condition for optimization.
-    elseif char ==? "\<space>" || index(a:targets, char) == -1 || empty(char)
+    " use '\k' to check agains keyword characters (see :help 'iskeyword' and
+    " :help /\k)
+    elseif char !~# '\k' || index(a:targets, char) == -1 || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
       endif
