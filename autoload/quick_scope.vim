@@ -271,7 +271,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
     " as the start of a new word.
     " use '\k' to check agains keyword characters (see :help 'iskeyword' and
     " :help /\k)
-    elseif char !~# '\k' || index(a:targets, char) == -1 || empty(char)
+    elseif char !~# '\k' || empty(char)
       if !is_first_word
         let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
       endif
@@ -281,7 +281,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
       let [char_p, char_s] = ['', '']
 
       let is_first_word = 0
-    else
+    elseif index(a:targets, char) != -1
       if has_key(occurrences, char)
         let occurrences[char] += 1
       else
