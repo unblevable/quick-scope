@@ -138,7 +138,7 @@ function! quick_scope#DoubleTap() abort
     " invoking mapping completes. So when highlight_line() is called here, the
     " first occurrence of the target will be under the cursor, and the second
     " occurrence will be where the first occurence should have been.
-    call quick_scope#HighlightLine(s:direction, {expand(s:target) : ''})
+    call quick_scope#HighlightLine(s:direction, [expand(s:target)])
 
     " Unhighlight only primary highlights (i.e., the character under the
     " cursor).
