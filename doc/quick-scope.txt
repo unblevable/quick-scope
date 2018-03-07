@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.3.4
+Version:            2.3.5
 Homepage:           https://github.com/bradford-smith94/quick-scope
 Original Author:    Brian Le (unblevable)
 Author:             Bradford Smith https://github.com/bradford-smith94
@@ -54,10 +54,10 @@ Place your cursor at the beginning the line below:
 >
   It's just like the story of the grasshopper and the octopus.
 
-You should see at least one highlighted character in all but one 'word'.
+You should see at least one highlighted character in all but one |word|.
 
-A character is highlighted with a |qs-primary-color|/|qs-secondary-color| if
-it is the first/second occurrence of that character from your cursor on a
+A character is highlighted with a |qs-primary-color| or |qs-secondary-color|
+if it is the first/second occurrence of that character from your cursor on a
 line.
 
 Use |f|<char> or |F|<char> to jump directly to any character with a primary
@@ -139,7 +139,8 @@ Create a custom mapping (<leader> + q in the example below):
   nmap <leader>q <plug>(QuickScopeToggle)
   xmap <leader>q <plug>(QuickScopeToggle)
 <
-Notice that you must use 'nmap'/'xmap' instead of 'nnoremap'/'xnoremap'.
+Notice that you must use |:nmap| and |:xmap| instead of |:nnoremap| and
+|:xnoremap|.
 
                                                                  *g:qs_enable*
 Setting `g:qs_enable` equal to zero will start the plugin disabled.
@@ -208,6 +209,9 @@ http://github.com/bradford-smith94/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.3.5     2018-03-07 * Fixed
+                        - Fixed quick-scope interpreting text separated by
+                          underscores as different words
  2.3.4     2018-03-05 * Fixed
                         - Fixed E714 in DoubleTap() introduced in multibyte
                           merge
