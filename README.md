@@ -55,12 +55,12 @@ Use your favorite plugin manager.
 ```vim
 " Your .vimrc
 
-Plug 'bradford-smith94/quick-scope'       " Plug
-NeoBundle 'bradford-smith94/quick-scope'  " xor NeoBundle
-Plugin 'bradford-smith94/quick-scope'     " xor Vundle
+Plug 'unblevable/quick-scope'       " Plug
+NeoBundle 'unblevable/quick-scope'  " xor NeoBundle
+Plugin 'unblevable/quick-scope'     " xor Vundle
 ```
 ```sh
-$ git clone https://github.com/bradford-smith94/quick-scope ~/.vim/bundle/quick-scope # xor Pathogen
+$ git clone https://github.com/unblevable/quick-scope ~/.vim/bundle/quick-scope # xor Pathogen
 ```
 
 ## Options

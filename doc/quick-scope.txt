@@ -2,7 +2,7 @@
 *quick-scope*
 
 Version:            2.3.5
-Homepage:           https://github.com/bradford-smith94/quick-scope
+Homepage:           https://github.com/unblevable/quick-scope
 Original Author:    Brian Le (unblevable)
 Author:             Bradford Smith https://github.com/bradford-smith94
 License:            MIT
@@ -44,7 +44,7 @@ three keystrokes with built-in Vim commands.
 If you're viewing this file in Vim and have quick-scope installed, you should
 already have good idea of what it does.
 
-Otherwise, see https://github.com/bradford-smith94/quick-scope#Features for
+Otherwise, see https://github.com/unblevable/quick-scope#Features for
 screencaps of this plugin in action.
 
  2.1 EXAMPLE                                                      *qs-example*
@@ -181,7 +181,7 @@ highlight. (default: a list of `a-z, A-Z, 0-9`)
 
 In the link below is a detailed look at the most common and useful options for
 moving your cursor across a line in Vim:
-https://github.com/bradford-smith94/quick-scope#moving-across-a-line
+https://github.com/unblevable/quick-scope#moving-across-a-line
 
 When you are aware of the existing tools available to you and their tradeoffs,
 you can better understand the benefits of this plugin.
@@ -190,7 +190,7 @@ you can better understand the benefits of this plugin.
 ==============================================================================
 
 Post any bug or feature request here:
-http://github.com/bradford-smith94/quick-scope/issues
+http://github.com/unblevable/quick-scope/issues
 
  6.1 KNOWN BUGS                                                *qs-known-bugs*
 ------------------------------------------------------------------------------
