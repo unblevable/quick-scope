@@ -3,8 +3,9 @@
 
 Version:            2.3.5
 Homepage:           https://github.com/unblevable/quick-scope
-Original Author:    Brian Le (unblevable)
-Author:             Bradford Smith https://github.com/bradford-smith94
+Authors:            Brian Le (unblevable)
+                    Bradford Smith (https://github.com/bradford-smith94)
+                    (wrote version 2)
 License:            MIT
 
  0. CONTENTS                                                     *qs-contents*
