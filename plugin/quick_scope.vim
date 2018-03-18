@@ -17,8 +17,6 @@ if v:version < 701 || (v:version == 701 && !has('patch040'))
   finish
 endif
 
-unlet! s:plugin_name
-
 " Save cpoptions and reassign them later. See :h use-cpo-save.
 let s:cpo_save = &cpo
 set cpo&vim
@@ -73,15 +71,38 @@ function! s:set_highlight_colors()
 
   " Highlight group marking first appearance of characters in a line.
   let g:qs_hi_group_primary = 'QuickScopePrimary'
-  execute 'highlight default link ' . g:qs_hi_group_primary . ' Function'
-
   " Highlight group marking second appearance of characters in a line.
   let g:qs_hi_group_secondary = 'QuickScopeSecondary'
-  execute 'highlight default link ' . g:qs_hi_group_secondary . ' Define'
-
   " Highlight group marking dummy cursor when quick-scope is enabled on key
   " press.
   let g:qs_hi_group_cursor = 'QuickScopeCursor'
+
+  if exists('g:qs_first_occurrence_highlight_color')
+    " backwards compatibility mode for old highlight configuration
+    echoerr s:plugin_name . ' option g:qs_first_occurrence_highlight_color is deprecated!'
+    let l:first_color = g:qs_first_occurrence_highlight_color
+    if l:first_color =~# '#'
+      execute 'highlight default ' . g:qs_hi_group_primary . ' gui=underline guifg=' . l:first_color
+    else
+      execute 'highlight default ' . g:qs_hi_group_primary . ' cterm=underline ctermfg=' . l:first_color
+    endif
+  else
+    execute 'highlight default link ' . g:qs_hi_group_primary . ' Function'
+  endif
+
+  if exists('g:qs_second_occurrence_highlight_color')
+    " backwards compatibility mode for old highlight configuration
+    echoerr s:plugin_name . ' option g:qs_second_occurrence_highlight_color is deprecated!'
+    let l:second_color = g:qs_second_occurrence_highlight_color
+    if l:second_color =~# '#'
+      execute 'highlight default ' . g:qs_hi_group_secondary . ' gui=underline guifg=' . l:second_color
+    else
+      execute 'highlight default ' . g:qs_hi_group_secondary . ' cterm=underline ctermfg=' . l:second_color
+    endif
+  else
+    execute 'highlight default link ' . g:qs_hi_group_secondary . ' Define'
+  endif
+
   execute 'highlight default link ' . g:qs_hi_group_cursor . ' Cursor'
 endfunction
 
