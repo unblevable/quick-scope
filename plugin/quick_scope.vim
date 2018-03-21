@@ -79,7 +79,15 @@ function! s:set_highlight_colors()
 
   if exists('g:qs_first_occurrence_highlight_color')
     " backwards compatibility mode for old highlight configuration
-    echoerr s:plugin_name . ' option g:qs_first_occurrence_highlight_color is deprecated!'
+    augroup quick_scope_lazy_print
+      if has('vim_starting')
+        " register this as a lazy print error so as not to block Vim starting
+        autocmd CursorHold,CursorHoldI * call quick_scope#lazy_print#err('option g:qs_first_occurrence_highlight_color is deprecated!')
+      else
+        echoerr s:plugin_name . ' option g:qs_first_occurrence_highlight_color is deprecated!'
+      endif
+    augroup END
+
     let l:first_color = g:qs_first_occurrence_highlight_color
     if l:first_color =~# '#'
       execute 'highlight default ' . g:qs_hi_group_primary . ' gui=underline guifg=' . l:first_color
@@ -92,7 +100,15 @@ function! s:set_highlight_colors()
 
   if exists('g:qs_second_occurrence_highlight_color')
     " backwards compatibility mode for old highlight configuration
-    echoerr s:plugin_name . ' option g:qs_second_occurrence_highlight_color is deprecated!'
+    augroup quick_scope_lazy_print
+      if has('vim_starting')
+        " register this as a lazy print error so as not to block Vim starting
+        autocmd CursorHold,CursorHoldI * call quick_scope#lazy_print#err('option g:qs_second_occurrence_highlight_color is deprecated!')
+      else
+        echoerr s:plugin_name . ' option g:qs_second_occurrence_highlight_color is deprecated!'
+      endif
+    augroup END
+
     let l:second_color = g:qs_second_occurrence_highlight_color
     if l:second_color =~# '#'
       execute 'highlight default ' . g:qs_hi_group_secondary . ' gui=underline guifg=' . l:second_color
