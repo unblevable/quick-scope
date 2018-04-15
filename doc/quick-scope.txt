@@ -1,14 +1,17 @@
-*quick-scope.txt*
+*quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
+*quick-scope*
 
-Version:    1.1.1
-Homepage:   https://github.com/unblevable/quick-scope
-Author:     Brian Le (unblevable)
-License:    MIT
+Version:            2.3.5
+Homepage:           https://github.com/unblevable/quick-scope
+Authors:            Brian Le (unblevable)
+                    Bradford Smith (https://github.com/bradford-smith94)
+                    (wrote version 2)
+License:            MIT
 
  0. CONTENTS                                                     *qs-contents*
 ==============================================================================
 
-  1. quick-scope .............................. |qs-quick-scope|
+  1. quick-scope Introduction ................. |qs-intro|
   2. Usage .................................... |qs-usage|
     2.1 Example ............................... |qs-example|
   3. Features ................................. |qs-features|
@@ -16,12 +19,14 @@ License:    MIT
     4.1 Highlight on key press ................ |qs-highlight-on-key-press|
     4.2 Customize colors ...................... |qs-customize-colors|
     4.3 Toggle highlighting ................... |qs-toggle-highlighting|
+    4.4 Disable on lone lings.................. |qs-disable-on-longlines|
+    4.5 Accepted Characters.................... |qs-accepted-chars|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
   7. Changelog ................................ |qs-changelog|
 
- 1. QUICK-SCOPE                                               *qs-quick-scope*
+ 1. QUICK-SCOPE INTRODUCTION                                        *qs-intro*
 ==============================================================================
 
 This plugin highlights the optimal characters to target for the |f|, |F|, |t|
@@ -50,16 +55,17 @@ Place your cursor at the beginning the line below:
 >
   It's just like the story of the grasshopper and the octopus.
 
-You should see at least one highlighted character in all but one 'word'.
+You should see at least one highlighted character in all but one |word|.
 
-A character is highlighted with a |primary-color|/|secondary-color| if it is
-the first/second occurrence of that character from your cursor on a line.
+A character is highlighted with a |qs-primary-color| or |qs-secondary-color|
+if it is the first/second occurrence of that character from your cursor on a
+line.
 
 Use |f|<char> or |F|<char> to jump directly to any character with a primary
 highlight forward or backward.
 
 The `h` in `the` should be the only character with a secondary highlight if
-your cursor is at the beginning of the example. Use |fh;| to quickly move to
+your cursor is at the beginning of the example. Use `fh;` to quickly move to
 it.
 
  3. FEATURES                                                     *qs-features*
@@ -99,29 +105,34 @@ Trigger a highlight only when pressing |f| and |F|.
  4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
 ------------------------------------------------------------------------------
 
-                                       *g:qs_first_occurrence_highlight_color*
-                                                               *primary-color*
-Set the (primary) color for the first occurrence of a character.
+                                                            *qs-primary-color*
+To set the (primary) color for the first occurrence of a character simply
+define the highlight group `QuickScopePrimary`. The default is to link this
+group to the `Function` group.
 
-GUI Vim~
 >
-  let g:qs_first_occurrence_highlight_color = '#afff5f'
+  highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
 <
-Terminal Vim~
->
-  let g:qs_first_occurrence_highlight_color = 155
-<
-                                      *g:qs_second_occurrence_highlight_color*
-                                                             *secondary-color*
-Set the (secondary) color for the second occurrence of a character.
+                                                          *qs-secondary-color*
+To set the (secondary) color for the second occurrence of a character simply
+define the highlight group `QuickScopeSecondary`. The default is to link this
+group to the `Define` group.
 
-GUI Vim~
 >
-  let g:qs_second_occurrence_highlight_color = '#5fffff'
+  highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
 <
-Terminal Vim~
+
+It is recommended to put these in an |autocmd| so that they are updated when
+the colorscheme updates. Make sure this autocmd group is set before you set
+colorscheme, so that the autocmd event properly triggers the highlight
+commands.
+
 >
-  let g:qs_second_occurrence_highlight_color = 81
+  augroup qs_colors
+    autocmd!
+    autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+    autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+  augroup END
 <
  4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------
@@ -135,9 +146,44 @@ Turn highlight on or off with a user command:
 Create a custom mapping (<leader> + q in the example below):
 >
   nmap <leader>q <plug>(QuickScopeToggle)
-  vmap <leader>q <plug>(QuickScopeToggle)
+  xmap <leader>q <plug>(QuickScopeToggle)
 <
-Notice that you must use 'nmap'/'vmap' instead of 'nnoremap'/'vnoremap'.
+Notice that you must use |:nmap| and |:xmap| instead of |:nnoremap| and
+|:xnoremap|.
+
+                                                                 *g:qs_enable*
+Setting `g:qs_enable` equal to zero will start the plugin disabled.
+(default: `1`)
+>
+  let g:qs_enable=0
+<
+
+                                                          *b:qs_local_disable*
+Additionally, setting the buffer local variable `b:qs_local_disable` will have
+the same effect on a specific buffer.
+>
+  let b:qs_local_disable=1
+<
+
+ 4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
+------------------------------------------------------------------------------
+
+                                                              *g:qs_max_chars*
+Turn off this plugin when the length of a line is longer than
+`g:qs_max_chars`. (default: `1000`)
+>
+  let g:qs_max_chars=80
+<
+
+4.5 ACCEPTED CHARACTERS                                    *qs-accepted-chars*
+------------------------------------------------------------------------------
+
+                                                         *g:qs_accepted_chars*
+The option `g:qs_accepted_chars` is a list of characters that quick-scope will
+highlight. (default: a list of `a-z, A-Z, 0-9`)
+>
+  let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
+<
 
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
@@ -171,6 +217,36 @@ http://github.com/unblevable/quick-scope/issues
 ==============================================================================
 
  Version   Date         Release Notes~
+|---------|-----------|-----------------------------------------------------------|
+ 2.3.5     2018-03-07 * Fixed
+                        - Fixed quick-scope interpreting text separated by
+                          underscores as different words
+ 2.3.4     2018-03-05 * Fixed
+                        - Fixed E714 in DoubleTap() introduced in multibyte
+                          merge
+ 2.3.3     2018-02-19 * Changed
+                        - Moved function definitions to autoload/ for small
+                          startuptime improvement
+ 2.3.2     2017-11-19 * Fixed
+                        - Vanilla mode works again after the multibyte merge
+                          (v2.3.0) caused Vim to freeze when highlighting
+ 2.3.1     2017-11-18 * Fixed
+                        - No longer clobbers <c-c> mappings
+ 2.3.0     2017-11-04 * Added
+                        - Added multibyte support
+                        - Added |g:qs_accepted_chars|
+ 2.2.0     2017-09-19 * Added
+                        - Added |b:qs_local_disable| option
+ 2.1.1     2017-09-17 * Fixed
+                        - Re-enable plugin in |visual-mode| and |operator-pending|
+                          mode after fixing |select-mode|
+ 2.1.0     2017-09-15 * Added
+                        - Added |g:qs_max_chars| option
+ 2.0.1     2017-09-14 * Fixed
+                        - No longer clobbers |Select-mode|
+ 2.0.0     2017-09-14 * Changed
+                        - Re-wrote how highlighting works, see
+                          |qs-customize-colors| for how the new system works
 |---------|-----------|-----------------------------------------------------------|
  1.1.1     2015-09-30 * Fixed
                         - Works after sourcing `.vimrc`
