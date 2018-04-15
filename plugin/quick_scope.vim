@@ -84,7 +84,9 @@ function! s:set_highlight_colors()
         " register this as a lazy print error so as not to block Vim starting
         autocmd CursorHold,CursorHoldI * call quick_scope#lazy_print#err('option g:qs_first_occurrence_highlight_color is deprecated!')
       else
-        echoerr s:plugin_name . ' option g:qs_first_occurrence_highlight_color is deprecated!'
+        echohl ErrorMsg
+        echomsg s:plugin_name . ' option g:qs_first_occurrence_highlight_color is deprecated!'
+        echohl None
       endif
     augroup END
 
@@ -105,7 +107,9 @@ function! s:set_highlight_colors()
         " register this as a lazy print error so as not to block Vim starting
         autocmd CursorHold,CursorHoldI * call quick_scope#lazy_print#err('option g:qs_second_occurrence_highlight_color is deprecated!')
       else
-        echoerr s:plugin_name . ' option g:qs_second_occurrence_highlight_color is deprecated!'
+        echohl ErrorMsg
+        echomsg s:plugin_name . ' option g:qs_second_occurrence_highlight_color is deprecated!'
+        echohl None
       endif
     augroup END
 

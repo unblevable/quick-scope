@@ -5,5 +5,7 @@ function! quick_scope#lazy_print#err(message) abort
     " clear the augroup so that these lazy loaded error messages only execute
     " once after starting
   augroup END
-  echoerr 'quick_scope ' . a:message
+  echohl ErrorMsg
+  echomsg 'quick_scope ' . a:message
+  echohl None
 endfunction
