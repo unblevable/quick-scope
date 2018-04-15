@@ -107,24 +107,32 @@ Trigger a highlight only when pressing |f| and |F|.
 
                                                             *qs-primary-color*
 To set the (primary) color for the first occurrence of a character simply
-define the highlight group `QuickScopePrimary`.
+define the highlight group `QuickScopePrimary`. The default is to link this
+group to the `Function` group.
 
 >
   highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
 <
                                                           *qs-secondary-color*
 To set the (secondary) color for the second occurrence of a character simply
-define the highlight group `QuickScopeSecondary`.
+define the highlight group `QuickScopeSecondary`. The default is to link this
+group to the `Define` group.
 
 >
   highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
 <
 
 It is recommended to put these in an |autocmd| so that they are updated when
-the colorscheme updates.
+the colorscheme updates. Make sure this autocmd group is set before you set
+colorscheme, so that the autocmd event properly triggers the highlight
+commands.
 
 >
-  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+  augroup qs_colors
+    autocmd!
+    autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+    autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+  augroup END
 <
  4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
 ------------------------------------------------------------------------------

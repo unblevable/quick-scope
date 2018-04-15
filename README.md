@@ -76,7 +76,14 @@ let g:qs_highlight_on_keys = ['f', 'F']
 ```
 
 ### Customize colors
-Quick-scope directly makes use of highlight groups called `QuickScopePrimary` and `QuickScopeSecondary`. You can customize them using the `:highlight` command. It is recommended to put them in an `autocmd` so that they are updated when the colorscheme changes.
+Quick-scope directly makes use of highlight groups called `QuickScopePrimary` and `QuickScopeSecondary`. By default `QuickScopePrimary` is linked to the `Function` group and `QuickScopeSecondary` is linked to the `Define` group. You can customize them by adding your own `:highlight` commands.
+```vim
+" Your .vimrc
+highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+```
+
+However, it is recommended to put them in an `autocmd` so that they are updated if and when the colorscheme changes. To achieve this you should put the following block before you set `colorscheme <colorsname>` (**Note:** if you do it after you will not see your colors).
 ```vim
 " Your .vimrc
 
