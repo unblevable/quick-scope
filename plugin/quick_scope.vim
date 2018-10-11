@@ -45,7 +45,7 @@ if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
   augroup quick_scope
     autocmd CursorMoved,InsertLeave,ColorScheme * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
-    autocmd InsertEnter * call quick_scope#UnhighlightLine()
+    autocmd InsertEnter,WinLeave * call quick_scope#UnhighlightLine()
   augroup END
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
