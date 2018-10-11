@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.4.0
+Version:            2.4.1
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -218,6 +218,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.4.1     2018-04-15 * Fixed
+                        - Fixed highlights stay when leaving the window while
+                          using the vanilla highlight mode
  2.4.0     2018-04-15 * Added
                         - Added a backwards compatibility layer for old
                           highlight variables, this removes the breaking change
