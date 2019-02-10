@@ -17,6 +17,7 @@ A Vim plugin that highlights which characters to target for <kbd>f</kbd>, <kbd>F
   + [Toggle highlighting](#toggle-highlighting)
   + [Disable on long lines](#disable-plugin-on-long-lines)
   + [Customize Accepted Characters](#accepted-characters)
+  + [Lazy Highlight](#lazy-highlight)
 + [Moving Across a Line](#moving-across-a-line)
   + [Character motions](#character-motions)
   + [Other motions](#other-motions)
@@ -135,6 +136,17 @@ The option `g:qs_accepted_chars` is a list of characters that quick-scope will h
 " Your .vimrc
 
 let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
+```
+
+### Lazy Highlight
+The option `g:qs_lazy_highlight` can be used to change the vanilla highlight
+mode autocmd event from `CursorMoved` to `CursorHold`. This option is provided
+to reduce the slowdown caused by vanilla highlight mode in large terminals.
+(default: `0`)
+```vim
+" Your .vimrc
+
+let g:qs_lazy_highlight = 1
 ```
 
 ## Moving Across a Line

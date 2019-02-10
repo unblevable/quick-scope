@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.4.1
+Version:            2.5.0
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -21,6 +21,7 @@ License:            MIT
     4.3 Toggle highlighting ................... |qs-toggle-highlighting|
     4.4 Disable on lone lings.................. |qs-disable-on-longlines|
     4.5 Accepted Characters.................... |qs-accepted-chars|
+    4.6 Lazy Highlight......................... |qs-lazy-highlight|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -185,6 +186,18 @@ highlight. (default: a list of `a-z, A-Z, 0-9`)
   let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
 <
 
+4.6 LAZY HIGHLIGHT                                         *qs-lazy-highlight*
+------------------------------------------------------------------------------
+
+                                                         *g:qs_lazy_highlight*
+The option `g:qs_lazy_highlight` can be used to change the vanilla highlight
+mode autocmd event from |CursorMoved| to |CursorHold|. This option is provided
+to reduce the slowdown caused by vanilla highlight mode in large terminals.
+(default: `0`)
+>
+  let g:qs_lazy_highlight = 1
+<
+
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
 
@@ -211,13 +224,20 @@ http://github.com/unblevable/quick-scope/issues
 
   Let me know if this plugin slows down Vim to an unmanageable level. Using
   |:QuickScopeToggle|, make sure that it is actually this plugin that is
-  causing performance problems you are experiencing.
+  causing performance problems you are experiencing. Also, try out the
+  |g:qs_lazy_highlight| option.
 
  7. CHANGELOG                                                   *qs-changelog*
 ==============================================================================
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.0     2019-02-09 * Fixed/Added
+                        - Fixed issue restoring saved highlight groups
+                        - Added option to change vanilla highlight mode autocmd
+                          event from CursorMoved to CursorHold to resolve
+                          slowdown issues
+                        - Fixed terminal cursor changing bug
  2.4.1     2018-04-15 * Fixed
                         - Fixed highlights stay when leaving the window while
                           using the vanilla highlight mode
