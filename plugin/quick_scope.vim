@@ -32,6 +32,10 @@ if !exists('g:qs_enable')
   let g:qs_enable = 1
 endif
 
+if !exists('g:qs_lazy_highlight')
+  let g:qs_lazy_highlight = 0
+endif
+
 if !exists('g:qs_max_chars')
   " Disable on long lines for performance
   let g:qs_max_chars = 1000
@@ -44,7 +48,11 @@ endif
 if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
   augroup quick_scope
-    autocmd CursorMoved,InsertLeave,ColorScheme,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
+    if g:qs_lazy_highlight
+      autocmd CursorHold,InsertLeave,ColorScheme,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
+    else
+      autocmd CursorMoved,InsertLeave,ColorScheme,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
+    endif
     autocmd InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * call quick_scope#UnhighlightLine()
   augroup END
 else
