@@ -354,8 +354,8 @@ endfunction
 " of a double_tap
 function! s:reset_saved_secondary_highlight() abort
   if s:saved_secondary_highlight =~# '^links to '
-    let s:saved_secondary_highlight = substitute(s:saved_secondary_highlight, '^links to ', '', '')
-    execute 'highlight! link ' . g:qs_hi_group_secondary . ' ' . s:saved_secondary_highlight
+    let s:saved_secondary_hlgroup_only = substitute(s:saved_secondary_highlight, '^links to ', '', '')
+    execute 'highlight! link ' . g:qs_hi_group_secondary . ' ' . s:saved_secondary_hlgroup_only
   else
     execute 'highlight ' . g:qs_hi_group_secondary . ' ' . s:saved_secondary_highlight
   endif
