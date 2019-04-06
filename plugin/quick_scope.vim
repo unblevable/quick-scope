@@ -49,9 +49,9 @@ if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
   augroup quick_scope
     if g:qs_lazy_highlight
-      autocmd CursorHold,InsertLeave,ColorScheme,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
+      autocmd CursorHold,InsertLeave,ColorScheme,WinEnter,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
     else
-      autocmd CursorMoved,InsertLeave,ColorScheme,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
+      autocmd CursorMoved,InsertLeave,ColorScheme,WinEnter,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
     endif
     autocmd InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * call quick_scope#UnhighlightLine()
   augroup END

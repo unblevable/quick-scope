@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.0
+Version:            2.5.1
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -232,6 +232,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.1     2019-02-09 * Fixed
+                        - Fixed issue with vanilla highlight disappearing on
+                          window switches
  2.5.0     2019-02-09 * Fixed/Added
                         - Fixed issue restoring saved highlight groups
                         - Added option to change vanilla highlight mode autocmd
