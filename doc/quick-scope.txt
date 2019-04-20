@@ -232,6 +232,8 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.2     2019-04-19 * Changed
+                        - Updated plugin description
  2.5.1     2019-02-09 * Fixed
                         - Fixed issue with vanilla highlight disappearing on
                           window switches
