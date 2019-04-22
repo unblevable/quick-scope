@@ -30,8 +30,8 @@ License:            MIT
  1. QUICK-SCOPE INTRODUCTION                                        *qs-intro*
 ==============================================================================
 
-This plugin highlights the optimal characters to target for the |f|, |F|, |t|
-and |T| motions for easier and faster left-right movement in Vim.
+This plugin attempts to highlight (on |CursorMoved|) a unique character in
+every word on a line to help you use the |f|, |F|, |t| and |T| motions.
 
 If you don't routinely use these keys you should! See `:help` |f| and `:help`
 |;| to get started and |qs-motivation| for a detailed look at why these keys
@@ -232,6 +232,8 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.2     2019-04-19 * Changed
+                        - Updated plugin description
  2.5.1     2019-02-09 * Fixed
                         - Fixed issue with vanilla highlight disappearing on
                           window switches
