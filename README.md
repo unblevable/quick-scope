@@ -17,6 +17,7 @@ keystrokes with Vim's built-in <kbd>f&lt;char&gt;</kbd> (which moves your cursor
   + [Customize colors](#customize-colors)
   + [Toggle highlighting](#toggle-highlighting)
   + [Disable on long lines](#disable-plugin-on-long-lines)
+  + [Blacklist buftypes](#blacklist-buftypes)
   + [Customize Accepted Characters](#accepted-characters)
   + [Lazy Highlight](#lazy-highlight)
 + [Moving Across a Line](#moving-across-a-line)
@@ -148,6 +149,16 @@ Turn off this plugin when the length of line is longer than `g:qs_max_chars`.
 " Your .vimrc
 
 let g:qs_max_chars=80
+```
+
+### Blacklist buftypes
+
+Setting `g:qs_buftype_blacklist` to a list of buffer types disables the plugin when
+entering certain `buftype`'s. For example, to disable this plugin when for terminals and
+floating windows without filetypes set, put the following in your `vimrc`:
+
+```vim
+let g:qs_buftype_blacklist = ['terminal', 'nofile']
 ```
 
 ### Accepted Characters

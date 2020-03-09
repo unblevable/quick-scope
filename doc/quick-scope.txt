@@ -22,6 +22,7 @@ License:            MIT
     4.4 Disable on lone lings.................. |qs-disable-on-longlines|
     4.5 Accepted Characters.................... |qs-accepted-chars|
     4.6 Lazy Highlight......................... |qs-lazy-highlight|
+    4.7 Blacklist Buftypes..................... |qs-buftype-blacklist|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -196,6 +197,16 @@ to reduce the slowdown caused by vanilla highlight mode in large terminals.
 (default: `0`)
 >
   let g:qs_lazy_highlight = 1
+<
+
+4.7 BLACKLIST BUFTYPES                                  *qs-buftype-blacklist*
+------------------------------------------------------------------------------
+
+                                                      *g:qs_buftype_blacklist*
+The option `g:qs_buftype_blacklist` can be used to disable this plugin when
+entering certain `buftype`'s. (default: `[]`)
+>
+  let g:qs_buftype_blacklist = []
 <
 
  5. MOTIVATION                                                 *qs-motivation*
