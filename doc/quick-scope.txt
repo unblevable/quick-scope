@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.1
+Version:            2.5.3
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -243,6 +243,8 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.3     2020-03-09 * Changed
+                        - Add buftype disable option
  2.5.2     2019-04-19 * Changed
                         - Updated plugin description
  2.5.1     2019-02-09 * Fixed
