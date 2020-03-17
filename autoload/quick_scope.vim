@@ -89,7 +89,8 @@ function! quick_scope#Aim(motion) abort
   redraw
 
   " Store and capture the target for the character motion.
-  let s:target = nr2char(getchar())
+  let char = getchar()
+  let s:target = char ==# "\<S-lt>" ? '<' : nr2char(char)
 
   return a:motion . s:target
 endfunction
