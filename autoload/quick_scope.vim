@@ -161,7 +161,7 @@ function! s:apply_highlight_patterns(patterns) abort
     " Ignore the leading | in the primary highlights string.
     call matchadd(g:qs_hi_group_primary, '\v%' . line('.') . 'l(' . patt_p[1:] . ')', g:qs_hi_priority)
   endif
-  if !empty(patt_s)
+  if !empty(patt_s) && g:qs_second_highlight
     call matchadd(g:qs_hi_group_secondary, '\v%' . line('.') . 'l(' . patt_s[1:] . ')', g:qs_hi_priority)
   endif
 endfunction

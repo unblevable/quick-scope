@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.4
+Version:            2.5.5
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -167,6 +167,14 @@ the same effect on a specific buffer.
   let b:qs_local_disable=1
 <
 
+                                                      *g:qs_second_hightlight*
+If you don't want the secondary highlight group to be used you can set
+`g:qs_second_hightlight` equal to zero and only first occurrences will be
+highlighted. (default `1`)
+>
+  let g:qs_second_hightlight=0
+<
+
  4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
 ------------------------------------------------------------------------------
 
@@ -243,6 +251,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.5     2020-04-04 * added
+                        - Added option |g:qs_second_hightlight| to turn off
+                          secondary highlighting
  2.5.4     2020-03-17 * Fixed
                         - Fixed issue with getchar() and n2char() regarding '<'
  2.5.3     2020-03-09 * Changed

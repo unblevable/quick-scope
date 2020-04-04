@@ -36,6 +36,10 @@ if !exists('g:qs_lazy_highlight')
   let g:qs_lazy_highlight = 0
 endif
 
+if !exists('g:qs_second_highlight')
+  let g:qs_second_highlight = 1
+endif
+
 if !exists('g:qs_max_chars')
   " Disable on long lines for performance
   let g:qs_max_chars = 1000
