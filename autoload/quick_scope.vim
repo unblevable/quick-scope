@@ -254,7 +254,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
     " Don't consider the character for highlighting, but mark the position
     " as the start of a new word.
-    " use '\k' to check agains keyword characters (see :help 'iskeyword' and
+    " use '\k' to check against keyword characters (see :help 'iskeyword' and
     " :help /\k)
     elseif char !~# '\k' || empty(char)
       if !is_first_word
@@ -266,15 +266,24 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
       let [char_p, char_s] = ['', '']
 
       let is_first_word = 0
-    elseif index(a:targets, char) != -1
-      if has_key(occurrences, char)
-        let occurrences[char] += 1
+    elseif (index(a:targets, char) != -1 && !g:qs_ignorecase) || index(a:targets, tolower(char)) != -1
+      if g:qs_ignorecase
+        " When g:qs_ignorecase is set, make char_i the lowercase of char
+        let char_i = tolower(char)
       else
-        let occurrences[char] = 1
+        let char_i = char
+      endif
+      " Do all counting based on char_i in case we are doing ignorecase
+      if has_key(occurrences, char_i)
+        let occurrences[char_i] += 1
+      else
+        let occurrences[char_i] = 1
       endif
 
       if !is_first_word
-        let char_occurrences = get(occurrences, char)
+        let char_occurrences = get(occurrences, char_i)
+        " Below use char instead of char_i so that highlights get placed on the
+        " correct character regardless of ignorecase
 
         " If the search is forward, we want to be greedy; otherwise, we
         " want to be reluctant. This prioritizes highlighting for
@@ -283,7 +292,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
         " If this is the first occurrence of the letter in the word,
         " mark it for a highlight.
         " If we are looking backwards, c will point to the end of the
-        " end of composing bytes so we adjust accordingly
+        " composing bytes so we adjust accordingly
         " eg. with a multibyte char of length 3, c will point to the
         " 3rd byte. Minus (len(char) - 1) to adjust to 1st byte
         if char_occurrences == 1 && ((direction == 1 && hi_p == 0) || direction == 0)
