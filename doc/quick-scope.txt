@@ -11,18 +11,17 @@ License:            MIT
  0. CONTENTS                                                     *qs-contents*
 ==============================================================================
 
-  1. quick-scope Introduction ................. |qs-intro|
+  1. QuickScope Introduction .................. |qs-intro|
   2. Usage .................................... |qs-usage|
     2.1 Example ............................... |qs-example|
   3. Features ................................. |qs-features|
   4. Options .................................. |qs-options|
-    4.1 Highlight on key press ................ |qs-highlight-on-key-press|
+    4.1 Highlighting options .................. |qs-highlighting-options|
+        Options to control when highlighting is triggered.
     4.2 Customize colors ...................... |qs-customize-colors|
-    4.3 Toggle highlighting ................... |qs-toggle-highlighting|
-    4.4 Disable on lone lings.................. |qs-disable-on-longlines|
-    4.5 Accepted Characters.................... |qs-accepted-chars|
-    4.6 Lazy Highlight......................... |qs-lazy-highlight|
-    4.7 Blacklist Buftypes..................... |qs-buftype-blacklist|
+        Options to control the color of highlights.
+    4.3 Accepted Characters.................... |qs-accepted-chars|
+        Options to control what characters are considered for highlighting.
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -44,7 +43,7 @@ three keystrokes with built-in Vim commands.
  2. USAGE                                                           *qs-usage*
 ==============================================================================
 
-If you're viewing this file in Vim and have quick-scope installed, you should
+If you're viewing this file in Vim and have QuickScope installed, you should
 already have good idea of what it does.
 
 Otherwise, see https://github.com/unblevable/quick-scope#Features for
@@ -73,14 +72,14 @@ it.
  3. FEATURES                                                     *qs-features*
 ==============================================================================
 
-- Quick-scope highlights the first occurrences of characters to the left and
+- QuickScope highlights the first occurrences of characters to the left and
   right of your cursor, once per word, everytime your cursor moves.
 
 - If a word does not contain a first occurrence of a character but contains a
   second occurrence of a character, that character is highlighted in another
   color.
 
-- Quick-scope takes extra measures to avoid bombarding you with superfluous
+- QuickScope takes extra measures to avoid bombarding you with superfluous
   colors:
 
   - It ignores special characters since they are easy to eye and tend to only
@@ -92,7 +91,7 @@ it.
  4. OPTIONS                                                       *qs-options*
 ==============================================================================
 
- 4.1 HIGHLIGHT ON KEY PRESS                        *qs-highlight-on-key-press*
+ 4.1 HIGHLIGHTING OPTIONS                            *qs-highlighting-options*
 ------------------------------------------------------------------------------
 
                                                       *g:qs_highlight_on_keys*
@@ -103,6 +102,63 @@ Trigger a highlight in the appropriate direction when pressing these keys:
 Trigger a highlight only when pressing |f| and |F|.
 >
   let g:qs_highlight_on_keys = ['f', 'F']
+<
+This option will only use QuickScope highlighting when starting a motion with
+the specified keys (highlight on keys mode) instead of the default behavior of
+highlighting all the time (referred to as vanilla highlighting mode).
+
+                                                           *:QuickScopeToggle*
+Turn highlight on or off with a user command:
+>
+  :QuickScopeToggle
+<
+                                                    *<plug>(QuickScopeToggle)*
+Create a custom mapping (<leader> + q in the example below):
+>
+  nmap <leader>q <plug>(QuickScopeToggle)
+  xmap <leader>q <plug>(QuickScopeToggle)
+<
+Notice that you must use |:nmap| and |:xmap| instead of |:nnoremap| and
+|:xnoremap|.
+
+                                                                 *g:qs_enable*
+Setting `g:qs_enable` equal to zero will start the plugin disabled.
+(default: `1`)
+>
+  let g:qs_enable = 0
+<
+                                                          *b:qs_local_disable*
+Additionally, setting the buffer local variable `b:qs_local_disable` will have
+the same effect on a specific buffer.
+>
+  let b:qs_local_disable = 1
+<
+                                                      *g:qs_buftype_blacklist*
+The option `g:qs_buftype_blacklist` can be used to disable this plugin when
+entering certain |buftype|'s. (default: `[]`)
+>
+  let g:qs_buftype_blacklist = ['terminal', 'nofile']
+<
+                                                              *g:qs_max_chars*
+Turn off this plugin when the length of a line is longer than
+`g:qs_max_chars`. (default: `1000`)
+>
+  let g:qs_max_chars = 80
+<
+                                                       *g:qs_second_highlight*
+If you don't want the secondary highlight group to be used you can set
+`g:qs_second_highlight` equal to zero and only first occurrences will be
+highlighted. (default `1`)
+>
+  let g:qs_second_highlight = 0
+<
+                                                         *g:qs_lazy_highlight*
+The option `g:qs_lazy_highlight` can be used to change the vanilla highlight
+mode autocmd event from |CursorMoved| to |CursorHold|. This option is provided
+to reduce the slowdown caused by vanilla highlight mode in large terminals.
+(default: `0`)
+>
+  let g:qs_lazy_highlight = 1
 <
 
  4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
@@ -138,65 +194,15 @@ commands.
   augroup END
 <
 
- 4.3 TOGGLE HIGHLIGHTING                              *qs-toggle-highlighting*
-------------------------------------------------------------------------------
-
-                                                           *:QuickScopeToggle*
-Turn highlight on or off with a user command:
->
-  :QuickScopeToggle
-<
-                                                    *<plug>(QuickScopeToggle)*
-Create a custom mapping (<leader> + q in the example below):
->
-  nmap <leader>q <plug>(QuickScopeToggle)
-  xmap <leader>q <plug>(QuickScopeToggle)
-<
-Notice that you must use |:nmap| and |:xmap| instead of |:nnoremap| and
-|:xnoremap|.
-
-                                                                 *g:qs_enable*
-Setting `g:qs_enable` equal to zero will start the plugin disabled.
-(default: `1`)
->
-  let g:qs_enable = 0
-<
-
-                                                          *b:qs_local_disable*
-Additionally, setting the buffer local variable `b:qs_local_disable` will have
-the same effect on a specific buffer.
->
-  let b:qs_local_disable = 1
-<
-
-                                                       *g:qs_second_highlight*
-If you don't want the secondary highlight group to be used you can set
-`g:qs_second_highlight` equal to zero and only first occurrences will be
-highlighted. (default `1`)
->
-  let g:qs_second_highlight = 0
-<
-
- 4.4 DISABLE ON LONG LINES                           *qs-disable-on-longlines*
-------------------------------------------------------------------------------
-
-                                                              *g:qs_max_chars*
-Turn off this plugin when the length of a line is longer than
-`g:qs_max_chars`. (default: `1000`)
->
-  let g:qs_max_chars = 80
-<
-
-4.5 ACCEPTED CHARACTERS                                    *qs-accepted-chars*
+4.3 ACCEPTED CHARACTERS                                    *qs-accepted-chars*
 ------------------------------------------------------------------------------
 
                                                          *g:qs_accepted_chars*
-The option `g:qs_accepted_chars` is a list of characters that quick-scope will
+The option `g:qs_accepted_chars` is a list of characters that QuickScope will
 highlight. (default: a list of `a-z, A-Z, 0-9`)
 >
   let g:qs_accepted_chars = [ 'a', 'b', ... etc ]
 <
-
                                                              *g:qs_ignorecase*
 The option `g:qs_ignorecase` is provided for compatibiltiy with other plugins.
 These plugins may change the behavior of |f| (etc.) such that they operate in
@@ -206,28 +212,6 @@ not actually jump to. This option makes the QuickScope highlights ignore
 character case. (default: `0`)
 >
   let g:qs_ignorecase = 1
-<
-
-4.6 LAZY HIGHLIGHT                                         *qs-lazy-highlight*
-------------------------------------------------------------------------------
-
-                                                         *g:qs_lazy_highlight*
-The option `g:qs_lazy_highlight` can be used to change the vanilla highlight
-mode autocmd event from |CursorMoved| to |CursorHold|. This option is provided
-to reduce the slowdown caused by vanilla highlight mode in large terminals.
-(default: `0`)
->
-  let g:qs_lazy_highlight = 1
-<
-
-4.7 BLACKLIST BUFTYPES                                  *qs-buftype-blacklist*
-------------------------------------------------------------------------------
-
-                                                      *g:qs_buftype_blacklist*
-The option `g:qs_buftype_blacklist` can be used to disable this plugin when
-entering certain `buftype`'s. (default: `[]`)
->
-  let g:qs_buftype_blacklist = []
 <
 
  5. MOTIVATION                                                 *qs-motivation*
