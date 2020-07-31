@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.7
+Version:            2.5.8
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -248,6 +248,10 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.8     2020-07-31 * Fixed
+                        - Fixes issue in Vanilla highlight mode with [count]
+                          movements throwing off the highlighted characters,
+                          don't enable the 2.5.7 fix for Vanilla mode
  2.5.7     2020-06-18 * Fixed
                         - Fixes which characters are highlighted when using a
                           count combined with highlight on keys mode

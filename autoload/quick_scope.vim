@@ -201,6 +201,14 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
   " Keeps track of the number of occurrences for each target
   let occurrences = {}
 
+  " Use 'count_proxy' to account for [count]f when highlight on keys mode is
+  " used, otherwise just use assume 1
+  if !exists('g:qs_highlight_on_keys')
+    let count_proxy = 1
+  else
+    let count_proxy = v:count1
+  endif
+
   " Patterns to match the characters that will be marked with primary and
   " secondary highlight groups, respectively
   let [patt_p, patt_s] = ['', '']
@@ -295,10 +303,10 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
         " composing bytes so we adjust accordingly
         " eg. with a multibyte char of length 3, c will point to the
         " 3rd byte. Minus (len(char) - 1) to adjust to 1st byte
-        if char_occurrences == v:count1 && ((direction == 1 && hi_p == 0) || direction == 0)
+        if char_occurrences == count_proxy && ((direction == 1 && hi_p == 0) || direction == 0)
           let hi_p = c - (1 - direction) * (len(char) - 1)
           let char_p = char
-        elseif char_occurrences == (v:count1 + 1) && ((direction == 1 && hi_s == 0) || direction == 0)
+        elseif char_occurrences == (count_proxy + 1) && ((direction == 1 && hi_s == 0) || direction == 0)
           let hi_s = c - (1 - direction) * (len(char)- 1)
           let char_s = char
         endif
