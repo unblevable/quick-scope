@@ -274,7 +274,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
       let [char_p, char_s] = ['', '']
 
       let is_first_word = 0
-    elseif (index(a:targets, char) != -1 && !g:qs_ignorecase) || index(a:targets, tolower(char)) != -1
+    elseif index(a:targets, g:qs_ignorecase ? tolower(char) : char) != -1
       if g:qs_ignorecase
         " When g:qs_ignorecase is set, make char_i the lowercase of char
         let char_i = tolower(char)
