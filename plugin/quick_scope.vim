@@ -87,7 +87,7 @@ xnoremap <silent> <plug>(QuickScopeToggle) :<c-u>call quick_scope#Toggle()<cr>
 " Set the colors used for highlighting.
 function! s:set_highlight_colors()
   " Priority for overruling other highlight matches.
-  let g:qs_hi_priority = 1
+  let g:qs_hi_priority = get(g:, "qs_hi_priority", 1)
 
   " Highlight group marking first appearance of characters in a line.
   let g:qs_hi_group_primary = 'QuickScopePrimary'
