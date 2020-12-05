@@ -114,6 +114,13 @@ augroup qs_colors
 augroup END
 ```
 
+The highlight groups are applied using a priority (see: `:help :syn-priority`
+and `:help matchadd()` for more detail). The default priority used is `1` but
+you can override this if needed by setting it yourself using:
+```vim
+let g:qs_hi_priority = 2
+```
+
 ### Toggle highlighting
 Turn the highlighting on and off with a user command:
 ```

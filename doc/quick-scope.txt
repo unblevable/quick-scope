@@ -203,6 +203,16 @@ commands.
   augroup END
 <
 
+
+                                                            *g:qs_hi_priority*
+The highlight groups are applied using |matchadd()| with a priority
+(|:syn-priority|). The default priority used is `1` but you can override this
+if needed by setting it yourself using:
+
+>
+  let g:qs_hi_priority = 2
+<
+
 4.3 ACCEPTED CHARACTERS                                    *qs-accepted-chars*
 ------------------------------------------------------------------------------
 
