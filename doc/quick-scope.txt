@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.8
+Version:            2.5.9
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -267,6 +267,11 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.9     2020-12-05 * Fixed/Added/Changed
+                        - Fix ignorecase issue with g:qs_accepted_chars
+                        - Added g:qs_delay to improve Vanilla highlight
+                          performance when has('timers')
+                        - Changed g:qs_hi_priority to be user configurable
  2.5.8     2020-07-31 * Fixed
                         - Fixes issue in Vanilla highlight mode with [count]
                           movements throwing off the highlighted characters,
@@ -274,10 +279,10 @@ http://github.com/unblevable/quick-scope/issues
  2.5.7     2020-06-18 * Fixed
                         - Fixes which characters are highlighted when using a
                           count combined with highlight on keys mode
- 2.5.6     2020-05-09 * added
+ 2.5.6     2020-05-09 * Added
                         - Added option |g:qs_ignorecase| to perform case
                           insensitive highlights
- 2.5.5     2020-04-04 * added
+ 2.5.5     2020-04-04 * Added
                         - Added option |g:qs_second_highlight| to turn off
                           secondary highlighting
  2.5.4     2020-03-17 * Fixed
