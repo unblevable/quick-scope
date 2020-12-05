@@ -181,6 +181,16 @@ to reduce the slowdown caused by vanilla highlight mode in large terminals.
 let g:qs_lazy_highlight = 1
 ```
 
+### Highlighting delay
+The option `g:qs_delay` can be used to set the delay duration after which the
+highlighting starts if the cursor is not moved. This option increases
+performance. Taken into account only if `g:qs_lazy_highlight` and
+`g:qs_highlight_on_keys` are not enabled. If you set this to 0, the
+highlighting will be synchronous. It requires `has('timers')`. (default: `50`)
+```vim
+let g:qs_delay = 0
+```
+
 ## Moving Across a Line
 This section provides a detailed look at the most common and useful options for
 moving your cursor across a line in Vim. When you are aware of the existing

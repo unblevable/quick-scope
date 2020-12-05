@@ -160,6 +160,15 @@ to reduce the slowdown caused by vanilla highlight mode in large terminals.
 >
   let g:qs_lazy_highlight = 1
 <
+                                                                  *g:qs_delay*
+The delay duration after which the highlighting starts if the cursor is not
+moved. This option increases performance. Taken into account only if
+`g:qs_lazy_highlight` and `g:qs_highlight_on_keys` are not enabled. If you set
+this to 0, the highlighting will be synchronous. It requires `has('timers')`.
+(default: `50`)
+>
+  let g:qs_delay = 0
+<
 
  4.2 CUSTOMIZE COLORS                                    *qs-customize-colors*
 ------------------------------------------------------------------------------
