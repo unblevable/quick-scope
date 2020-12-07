@@ -73,11 +73,11 @@ if !exists('g:qs_highlight_on_keys')
   augroup END
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
-  for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
-    for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
-      execute printf(mapmode . ' <unique> <silent> <expr> %s quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
-    endfor
-  endfor
+  " for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
+  "   for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+  "     execute printf(mapmode . ' <unique> <silent> <expr> %s quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
+  "   endfor
+  " endfor
 endif
 
 " User commands --------------------------------------------------------------
