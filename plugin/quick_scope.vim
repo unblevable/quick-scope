@@ -75,13 +75,13 @@ else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in split('fFtT', '\zs')
     for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
-      execute printf(mapmode . ' <silent> <expr> <Plug>QuickScope%s quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
+      execute printf(mapmode . ' <expr> <Plug>(QuickScope%s) quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
     endfor
   endfor
   for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
-    for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+    for mapmode in ['nmap', 'omap', 'xmap']
       if empty(mapcheck(motion, mapmode[0]))
-        execute printf(mapmode . ' <unique> <silent> <expr> %s <Plug>QuickScope%s', motion, motion)
+        execute printf(mapmode . ' <unique> %s <Plug>(QuickScope%s)', motion, motion)
       endif
     endfor
   endfor
