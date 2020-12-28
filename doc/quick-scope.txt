@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.9
+Version:            2.5.10
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -267,6 +267,8 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.10    2020-12-28 * Changed
+                        - Changed highlight on keys mappings to <Plug> mappings
  2.5.9     2020-12-05 * Fixed/Added/Changed
                         - Fix ignorecase issue with g:qs_accepted_chars
                         - Added g:qs_delay to improve Vanilla highlight
