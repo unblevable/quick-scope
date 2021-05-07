@@ -1,6 +1,7 @@
 " Autoload interface functions -------------------------------------------------
 
 function! quick_scope#Wallhacks(motion=2) abort
+  call quick_scope#Ready()
   if (a:motion ==? 'f')
     let direction = 1
   elseif (a:motion ==? 't')
@@ -10,16 +11,19 @@ function! quick_scope#Wallhacks(motion=2) abort
   endif
 
   augroup quick_scope_wallhacks
-    autocmd CursorMoved,InsertLeave,ColorScheme,WinEnter,BufEnter,FocusGained,InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * ++once call quick_scope#UnhighlightLine()
-    if !g:qs_lazy_highlight
+    autocmd CursorMoved,ColorScheme,FocusGained,InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * ++once call quick_scope#UnhighlightLine()
+    if g:qs_lazy_highlight
       autocmd InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * ++once call quick_scope#StopTimer()
     endif
   augroup END
+
   if g:qs_lazy_highlight
-    call quick_scope#HighlightLine(direction, g:qs_accepted_chars)
-  else
     call quick_scope#HighlightLineDelay(direction, g:qs_accepted_chars)
+  else
+    call quick_scope#HighlightLine(direction, g:qs_accepted_chars)
+    redraw
   endif
+  return ''
 endfunction
 
 function! quick_scope#Toggle() abort
