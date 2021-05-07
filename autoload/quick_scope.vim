@@ -11,6 +11,9 @@ function! quick_scope#Wallhacks(motion=2) abort
   endif
 
   augroup quick_scope_wallhacks
+    for useraucmd in g:qs_augrp_clean
+      execute printf('autocmd User ' .  useraucmd . 'call quick_scope#UnhighlightLine()')
+    endfor
     autocmd CursorMoved,ColorScheme,FocusGained,InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * ++once call quick_scope#UnhighlightLine()
     if g:qs_lazy_highlight
       autocmd InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * ++once call quick_scope#StopTimer()
