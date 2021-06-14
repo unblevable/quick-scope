@@ -18,6 +18,7 @@ keystrokes with Vim's built-in <kbd>f&lt;char&gt;</kbd> (which moves your cursor
   + [Toggle highlighting](#toggle-highlighting)
   + [Disable on long lines](#disable-plugin-on-long-lines)
   + [Blacklist buftypes](#blacklist-buftypes)
+  + [Blacklist filetypes](#blacklist-filetypes)
   + [Customize Accepted Characters](#accepted-characters)
   + [Lazy Highlight](#lazy-highlight)
 + [Moving Across a Line](#moving-across-a-line)
@@ -166,6 +167,17 @@ floating windows without filetypes set, put the following in your `vimrc`:
 
 ```vim
 let g:qs_buftype_blacklist = ['terminal', 'nofile']
+```
+
+### Blacklist filetypes
+
+Setting `g:qs_filetype_blacklist` to a list of file types disables the plugin when
+entering certain `filetypes`'s. For example, to disable this plugin for
+[dashboard-nvim](https://github.com/glepnir/dashboard-nvim) and
+[vim-startify](https://github.com/mhinz/vim-startify), put the following in your `vimrc`:
+
+```vim
+let g:qs_filetype_blacklist = ['dashboard', 'startify']
 ```
 
 ### Accepted Characters

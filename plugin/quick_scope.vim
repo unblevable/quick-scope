@@ -57,6 +57,10 @@ if !exists('g:qs_buftype_blacklist')
   let g:qs_buftype_blacklist = []
 endif
 
+if !exists('g:qs_filetype_blacklist')
+  let g:qs_filetype_blacklist = []
+endif
+
 if !exists('g:qs_delay')
   let g:qs_delay = has('timers') ? 50 : 0
 endif

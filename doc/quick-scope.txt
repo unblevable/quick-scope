@@ -139,6 +139,12 @@ entering certain |buftype|'s. (default: `[]`)
 >
   let g:qs_buftype_blacklist = ['terminal', 'nofile']
 <
+                                                      *g:qs_filetype_blacklist*
+The option `g:qs_filetype_blacklist` can be used to disable this plugin when
+entering certain |filetype|'s. (default: `[]`)
+>
+  let g:qs_filetype_blacklist = ['dashboard', 'startify']
+<
                                                               *g:qs_max_chars*
 Turn off this plugin when the length of a line is longer than
 `g:qs_max_chars`. (default: `1000`)
