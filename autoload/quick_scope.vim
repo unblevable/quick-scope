@@ -42,7 +42,7 @@ endfunction
 " The direction can be 0 (backward), 1 (forward) or 2 (both). Targets are the
 " characters that can be highlighted.
 function! quick_scope#HighlightLine(direction, targets) abort
-  if g:qs_enable && (!exists('b:qs_local_disable') || !b:qs_local_disable) && index(get(g:, 'qs_buftype_blacklist', []), &buftype) < 0
+  if g:qs_enable && (!exists('b:qs_local_disable') || !b:qs_local_disable) && index(get(g:, 'qs_buftype_blacklist', []), &buftype) && index(get(g:, 'qs_filetype_blacklist', []), &filetype) < 0
     let line = getline(line('.'))
     let len = strlen(line)
     let pos = col('.')
