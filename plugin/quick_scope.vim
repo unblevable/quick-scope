@@ -78,9 +78,11 @@ if !exists('g:qs_highlight_on_keys')
 else
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in split('fFtT', '\zs')
-    for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+    for mapmode in ['onoremap', 'xnoremap']
       execute printf(mapmode . ' <expr> <Plug>(QuickScope%s) quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
     endfor
+    " Using <expr> for normal mode mappings can cause problems (#80)
+    execute printf('nnoremap <silent> <Plug>(QuickScope%s) :<C-U>call quick_scope#Ready() \| call quick_scope#Aim("%s", 1) \| call quick_scope#Reload() \| call quick_scope#DoubleTap()<CR>', motion, motion)
   endfor
   for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
     for mapmode in ['nmap', 'omap', 'xmap']
