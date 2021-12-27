@@ -7,5 +7,5 @@ function! quick_scope#mapping#Restore(mapping) abort
         \ . (a:mapping.nowait ? '<nowait> ' : '')
         \ . (a:mapping.silent ? '<silent> ' : '')
         \ . a:mapping.lhs . ' '
-        \ . substitute(a:mapping.rhs, '<SID>', '<SNR>' . a:mapping.sid . '_', 'g')
+        \ . substitute(escape(a:mapping.rhs, '|'), '<SID>', '<SNR>' . a:mapping.sid . '_', 'g')
 endfunction
