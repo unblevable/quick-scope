@@ -90,11 +90,7 @@ endfunction
 
 " Returns {character motion}{captured char} (to map to a character motion) to
 " emulate one as closely as possible.
-function! quick_scope#Aim(motion, ...) abort
-  " We don't use <expr> for normal mode mappings so we need this function to
-  " execute the motion command directly
-  let should_execute = get(a:, 1, 0)
-
+function! quick_scope#Aim(motion) abort
   if (a:motion ==# 'f' || a:motion ==# 't')
     let s:direction = 1
   else
@@ -123,9 +119,6 @@ function! quick_scope#Aim(motion, ...) abort
   let char = getchar()
   let s:target = char ==# "\<S-lt>" ? '<' : nr2char(char)
 
-  if should_execute
-    execute 'normal! '.a:motion.s:target
-  endif
   return a:motion . s:target
 endfunction
 
