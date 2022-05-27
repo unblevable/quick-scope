@@ -273,7 +273,7 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
- 2.5.15    2022-05-27 * Fixed
+ 2.5.16    2022-05-27 * Fixed
                         - Fixed restoring Ctrl-c mapping when maparg() reports
                           multiple modes
  2.5.15    2022-01-29 * Fixed
