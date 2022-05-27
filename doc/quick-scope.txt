@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.15
+Version:            2.5.16
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -273,6 +273,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.5.15    2022-05-27 * Fixed
+                        - Fixed restoring Ctrl-c mapping when maparg() reports
+                          multiple modes
  2.5.15    2022-01-29 * Fixed
                         - Fixed v2.5.14, v:count1 should have been used instead
                           of v:count
