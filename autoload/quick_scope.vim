@@ -101,11 +101,13 @@ function! quick_scope#Aim(motion) abort
   " the command line.
   let s:cursor = matchadd(g:qs_hi_group_cursor, '\%#', g:qs_hi_priority + 1)
 
+  let s:normal_mode = 'n'
+  let s:dont_use_abbr = 0
   " Silence 'Type :quit<Enter> to exit Vim' message on <c-c> during a
   " character search.
   "
   " This line also causes getchar() to cleanly cancel on a <c-c>.
-  let b:qs_prev_ctrl_c_map = maparg('<c-c>', 'n', 0, 1)
+  let b:qs_prev_ctrl_c_map = maparg('<c-c>', s:normal_mode, s:dont_use_abbr, 1)
   if empty(b:qs_prev_ctrl_c_map)
     unlet b:qs_prev_ctrl_c_map
   endif
@@ -129,7 +131,7 @@ function! quick_scope#Reload() abort
 
   " Restore previous or default <c-c> functionality
   if exists('b:qs_prev_ctrl_c_map')
-    call quick_scope#mapping#Restore(b:qs_prev_ctrl_c_map)
+    call mapset(s:normal_mode, s:dont_use_abbr, b:qs_prev_ctrl_c_map)
     unlet b:qs_prev_ctrl_c_map
   else
     execute 'nunmap <c-c>'
