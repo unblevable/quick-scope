@@ -115,7 +115,9 @@ function! quick_scope#Aim(motion) abort
 
   call quick_scope#HighlightLine(s:direction, g:qs_accepted_chars)
 
-  redraw
+  if !&lazyredraw
+    redraw
+  endif
 
   " Store and capture the target for the character motion.
   let char = getchar()
