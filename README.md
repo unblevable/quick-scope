@@ -66,6 +66,9 @@ target.
   + This helps you to become a better user of vanilla Vim.
 
 ## Installation
+
+[![LuaRocks](https://img.shields.io/luarocks/v/unblevable/quick-scope?logo=lua&color=purple)](https://luarocks.org/modules/unblevable/quick-scope)
+
 Use your favorite plugin manager.
 ```vim
 " Your .vimrc
