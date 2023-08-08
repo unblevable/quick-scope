@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.6.0
+Version:            2.6.1
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -273,6 +273,10 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.6.1     2023-08-08 * Fixed
+                        - Revert 'redraw' change, this breaks highlight on keys
+                        Changed
+                        - Update to LuaRocks release hook
  2.6.0     2023-08-01 * Added
                         - Added workflow to publish to LuaRocks on release
                         Changed
