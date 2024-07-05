@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.6.1
+Version:            2.6.2
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -273,6 +273,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.6.2     2024-07-05 * Changed
+                        - Made plugin operation mode checking more fixed between
+                          plugin script and autoload functions
  2.6.1     2023-08-08 * Fixed
                         - Revert 'redraw' change, this breaks highlight on keys
                         Changed

@@ -1,5 +1,11 @@
 " Autoload interface functions -------------------------------------------------
 
+function! quick_scope#SetMode(mode) abort
+  if !exists('s:qs_mode')
+    let s:qs_mode = a:mode
+  endif
+endfunction
+
 function! quick_scope#Toggle() abort
   if g:qs_enable
     let g:qs_enable = 0
@@ -232,7 +238,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
   " Use 'count_proxy' to account for [count]f when highlight on keys mode is
   " used, otherwise just use assume 1
-  if !exists('g:qs_highlight_on_keys')
+  if s:qs_mode ==# 'vanilla'
     let count_proxy = 1
   else
     let count_proxy = v:count1
@@ -355,7 +361,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
   let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
-  if exists('g:qs_highlight_on_keys')
+  if s:qs_mode ==# 'keys'
     call s:save_chars_with_secondary_highlights([char_p, char_s])
   endif
 
