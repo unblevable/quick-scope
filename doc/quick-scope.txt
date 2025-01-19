@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.6.2
+Version:            2.7.0
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -20,8 +20,9 @@ License:            MIT
         Options to control when highlighting is triggered.
     4.2 Customize colors ...................... |qs-customize-colors|
         Options to control the color of highlights.
-    4.3 Accepted Characters.................... |qs-accepted-chars|
+    4.3 Accepted Characters.................... |qaccepted-charss-accepted-chars|
         Options to control what characters are considered for highlighting.
+    4.4 Using with other plugins............... |qs-wallhacks|
   5. Motivation ............................... |qs-motivation|
   6. Bugs ..................................... |qs-bugs|
     6.1 Known bugs ............................ |qs-known-bugs|
@@ -239,6 +240,24 @@ character case. (default: `0`)
   let g:qs_ignorecase = 1
 <
 
+4.3 USING WITH OTHER PLUGINS (WALLHACKS)                        *qs-wallhacks*
+------------------------------------------------------------------------------
+
+                                                            *g:qs_augrp_clean*
+The option `g:qs_augrp_clean`, is provided to ease the interactions between
+QuickScope and other plugins that remap `f` (it defaults to the value
+`['EasyMotionPromptBegin']`).
+
+An example mapping for use with EasyMotion is provided:
+>
+  nmap f <Plug>(QuickScopeWallHacksF)<Plug>(easmotion-fl)
+<
+
+For more detail see discussions on the Wallhacks PR:
+  https://github.com/unblevable/quick-scope/pull/73
+As well as the related issue:
+  https://github.com/unblevable/quick-scope/issues/55
+
  5. MOTIVATION                                                 *qs-motivation*
 ==============================================================================
 
@@ -273,6 +292,9 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.7.0     2025-01-19 * Added
+                        - Added Wallhacks (better ability to interact with other
+                          plugins)
  2.6.2     2024-07-05 * Changed
                         - Made plugin operation mode checking more fixed between
                           plugin script and autoload functions
