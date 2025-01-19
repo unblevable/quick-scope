@@ -61,6 +61,10 @@ if !exists('g:qs_filetype_blacklist')
   let g:qs_filetype_blacklist = []
 endif
 
+if !exists('g:qs_augrp_clean')
+  let g:qs_augrp_clean = ['EasyMotionPromptBegin']
+endif
+
 if !exists('g:qs_delay')
   let g:qs_delay = has('timers') ? 50 : 0
 endif
@@ -95,6 +99,12 @@ else
   endfor
 endif
 
+for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+  for motion in split('FT', '\zs')
+    execute printf(mapmode . ' <expr> <Plug>(QuickScopeWallhacks%s) quick_scope#Wallhacks("%s")', motion, motion)
+  endfor
+  execute printf(mapmode . ' <expr> <Plug>(QuickScopeWallhacks) quick_scope#Wallhacks()')
+endfor
 " User commands --------------------------------------------------------------
 command! -nargs=0 QuickScopeToggle call quick_scope#Toggle()
 
