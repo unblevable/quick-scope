@@ -71,6 +71,7 @@ endif
 
 if !exists('g:qs_highlight_on_keys')
   " Vanilla mode. Highlight on cursor movement.
+  call quick_scope#SetMode('vanilla')
   augroup quick_scope
     if g:qs_lazy_highlight
       autocmd CursorHold,InsertLeave,ColorScheme,WinEnter,BufEnter,FocusGained * call quick_scope#UnhighlightLine() | call quick_scope#HighlightLine(2, g:qs_accepted_chars)
@@ -80,11 +81,14 @@ if !exists('g:qs_highlight_on_keys')
     autocmd InsertEnter,BufLeave,TabLeave,WinLeave,FocusLost * call quick_scope#StopTimer() | call quick_scope#UnhighlightLine()
   augroup END
 else
+  call quick_scope#SetMode('keys')
   " Highlight on key press. Set an 'augmented' mapping for each defined key.
   for motion in split('fFtT', '\zs')
-    for mapmode in ['nnoremap', 'onoremap', 'xnoremap']
+    for mapmode in ['onoremap', 'xnoremap']
       execute printf(mapmode . ' <expr> <Plug>(QuickScope%s) quick_scope#Ready() . quick_scope#Aim("%s") . quick_scope#Reload() . quick_scope#DoubleTap()', motion, motion)
     endfor
+    " Using <expr> for normal mode mappings can cause problems (#80)
+    execute printf('nnoremap <silent> <Plug>(QuickScope%s) :<C-U>call quick_scope#Ready() \| execute "normal!" v:count1 . quick_scope#Aim("%s") \| call quick_scope#Reload() \| call quick_scope#DoubleTap()<CR>', motion, motion)
   endfor
   for motion in filter(g:qs_highlight_on_keys, "v:val =~# '^[fFtT]$'")
     for mapmode in ['nmap', 'omap', 'xmap']

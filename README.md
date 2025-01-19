@@ -66,6 +66,9 @@ target.
   + This helps you to become a better user of vanilla Vim.
 
 ## Installation
+
+[![LuaRocks](https://img.shields.io/luarocks/v/unblevable/quick-scope?logo=lua&color=purple)](https://luarocks.org/modules/unblevable/quick-scope)
+
 Use your favorite plugin manager.
 ```vim
 " Your .vimrc
@@ -89,6 +92,14 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 " Trigger a highlight only when pressing f and F.
 let g:qs_highlight_on_keys = ['f', 'F']
 ```
+
+Quick-scope determines the highlighting mode (always on, vs highlight on key
+press) when the plugin is initialized. This means that if you want highlight on
+keys functionality this value must be set before the `plugin/quick_scope.vim`
+file is sourced. For more details about it or details about symptoms you may
+encounter see discussion in issues
+[#72](https://github.com/unblevable/quick-scope/issues/72) and
+[#98](https://github.com/unblevable/quick-scope/issues/98).
 
 ### Customize colors
 Quick-scope directly makes use of highlight groups called `QuickScopePrimary`

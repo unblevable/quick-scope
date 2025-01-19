@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.5.11
+Version:            2.6.2
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -273,6 +273,36 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.6.2     2024-07-05 * Changed
+                        - Made plugin operation mode checking more fixed between
+                          plugin script and autoload functions
+ 2.6.1     2023-08-08 * Fixed
+                        - Revert 'redraw' change, this breaks highlight on keys
+                        Changed
+                        - Update to LuaRocks release hook
+ 2.6.0     2023-08-01 * Added
+                        - Added workflow to publish to LuaRocks on release
+                        Changed
+                        - Do not call 'redraw' while 'lazyredraw' is set
+ 2.5.17    2022-03-14 * Fixed
+                        - Neovim mapping issue caused by custom mapping
+                          restore replaced with `mapset()`
+ 2.5.16    2022-05-27 * Fixed
+                        - Fixed restoring Ctrl-c mapping when maparg() reports
+                          multiple modes
+ 2.5.15    2022-01-29 * Fixed
+                        - Fixed v2.5.14, v:count1 should have been used instead
+                          of v:count
+ 2.5.14    2022-01-27 * Fixed
+                        - Fixed highlight on keys mode <count><motion> not
+                          working after v2.5.13
+ 2.5.13    2021-12-28 * Fixed
+                        - Fixed normal mode errors of E523 when using highlight
+                          on keys and Ctrl-c mapping restoration when using pipe
+                          characters
+ 2.5.12    2021-10-07 * Fixed
+                        - Fixed incorrect conditional check for buftype
+                          blacklist
  2.5.11    2021-06-22 * Added
                         - Added |g:qs_filetype_blacklist|
  2.5.10    2020-12-28 * Changed

@@ -29,6 +29,12 @@ function! quick_scope#Wallhacks(motion=2) abort
   return ''
 endfunction
 
+function! quick_scope#SetMode(mode) abort
+  if !exists('s:qs_mode')
+    let s:qs_mode = a:mode
+  endif
+endfunction
+
 function! quick_scope#Toggle() abort
   if g:qs_enable
     let g:qs_enable = 0
@@ -42,7 +48,10 @@ endfunction
 " The direction can be 0 (backward), 1 (forward) or 2 (both). Targets are the
 " characters that can be highlighted.
 function! quick_scope#HighlightLine(direction, targets) abort
-  if g:qs_enable && (!exists('b:qs_local_disable') || !b:qs_local_disable) && index(get(g:, 'qs_buftype_blacklist', []), &buftype) && index(get(g:, 'qs_filetype_blacklist', []), &filetype) < 0
+  if g:qs_enable &&
+        \ (!exists('b:qs_local_disable') || !b:qs_local_disable) &&
+        \ index(get(g:, 'qs_buftype_blacklist', []), &buftype) < 0 &&
+        \ index(get(g:, 'qs_filetype_blacklist', []), &filetype) < 0
     let line = getline(line('.'))
     let len = strlen(line)
     let pos = col('.')
@@ -127,11 +136,13 @@ function! quick_scope#Aim(motion) abort
   " the command line.
   let s:cursor = matchadd(g:qs_hi_group_cursor, '\%#', g:qs_hi_priority + 1)
 
+  let s:normal_mode = 'n'
+  let s:dont_use_abbr = 0
   " Silence 'Type :quit<Enter> to exit Vim' message on <c-c> during a
   " character search.
   "
   " This line also causes getchar() to cleanly cancel on a <c-c>.
-  let b:qs_prev_ctrl_c_map = maparg('<c-c>', 'n', 0, 1)
+  let b:qs_prev_ctrl_c_map = maparg('<c-c>', s:normal_mode, s:dont_use_abbr, 1)
   if empty(b:qs_prev_ctrl_c_map)
     unlet b:qs_prev_ctrl_c_map
   endif
@@ -155,7 +166,7 @@ function! quick_scope#Reload() abort
 
   " Restore previous or default <c-c> functionality
   if exists('b:qs_prev_ctrl_c_map')
-    call quick_scope#mapping#Restore(b:qs_prev_ctrl_c_map)
+    call mapset(s:normal_mode, s:dont_use_abbr, b:qs_prev_ctrl_c_map)
     unlet b:qs_prev_ctrl_c_map
   else
     execute 'nunmap <c-c>'
@@ -256,7 +267,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
   " Use 'count_proxy' to account for [count]f when highlight on keys mode is
   " used, otherwise just use assume 1
-  if !exists('g:qs_highlight_on_keys')
+  if s:qs_mode ==# 'vanilla'
     let count_proxy = 1
   else
     let count_proxy = v:count1
@@ -379,7 +390,7 @@ function! s:get_highlight_patterns(line, cursor, end, targets) abort
 
   let [patt_p, patt_s] = s:add_to_highlight_patterns([patt_p, patt_s], [hi_p, hi_s])
 
-  if exists('g:qs_highlight_on_keys')
+  if s:qs_mode ==# 'keys'
     call s:save_chars_with_secondary_highlights([char_p, char_s])
   endif
 
