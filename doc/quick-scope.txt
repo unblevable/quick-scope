@@ -20,7 +20,7 @@ License:            MIT
         Options to control when highlighting is triggered.
     4.2 Customize colors ...................... |qs-customize-colors|
         Options to control the color of highlights.
-    4.3 Accepted Characters.................... |qaccepted-charss-accepted-chars|
+    4.3 Accepted Characters.................... |qs-accepted-chars|
         Options to control what characters are considered for highlighting.
     4.4 Using with other plugins............... |qs-wallhacks|
   5. Motivation ............................... |qs-motivation|
