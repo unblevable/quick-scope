@@ -1,13 +1,14 @@
 " Autoload interface functions -------------------------------------------------
 
-function! quick_scope#Wallhacks(motion=2) abort
+function! quick_scope#Wallhacks(...) abort
+  let l:motion = a:0 > 0 ? a:1 : 2
   call quick_scope#Ready()
-  if (a:motion ==? 'f')
+  if (l:motion ==? 'f')
     let direction = 1
-  elseif (a:motion ==? 't')
+  elseif (l:motion ==? 't')
     let direction = 0
   else
-    let direction = a:motion
+    let direction = l:motion
   endif
 
   augroup quick_scope_wallhacks
