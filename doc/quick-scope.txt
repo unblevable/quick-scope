@@ -1,7 +1,7 @@
 *quick-scope.txt* Highlight unique character targets for f/F and t/T motions.
 *quick-scope*
 
-Version:            2.7.0
+Version:            2.7.1
 Homepage:           https://github.com/unblevable/quick-scope
 Authors:            Brian Le (unblevable)
                     Bradford Smith (https://github.com/bradford-smith94)
@@ -292,6 +292,8 @@ http://github.com/unblevable/quick-scope/issues
 
  Version   Date         Release Notes~
 |---------|-----------|-----------------------------------------------------------|
+ 2.7.1     2025-01-19 * Changed
+                        - Fixed Wallhacks Vim8 support
  2.7.0     2025-01-19 * Added
                         - Added Wallhacks (better ability to interact with other
                           plugins)
